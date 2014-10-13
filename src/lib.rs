@@ -13,13 +13,11 @@ use std::to_string::ToString;
 use serialize::json;
 use serialize::json::{JsonList, Json, JsonObject, ToJson};
 
+pub use mutable_json::MutableJson;
+
 pub mod mutable_json;
 
-trait Builder {
-
-}
-
-struct ListBuilder {
+pub struct ListBuilder {
     list: JsonList,
     null: bool
 }
@@ -51,11 +49,9 @@ impl ListBuilder {
             json::List(self.list)
         }
     }
-}
 
-impl<T: ToJson> ListBuilder {
-    pub fn push(&mut self, value: T) {
-        self.list.push(value.to_json());
+    pub fn push_json(&mut self, value: Json) {
+        self.list.push(value);
     }
 
     pub fn list(&mut self, builder: |&mut ListBuilder|) {
@@ -71,13 +67,61 @@ impl<T: ToJson> ListBuilder {
     }
 }
 
+impl<T: ToJson> ListBuilder {
+    pub fn push(&mut self, value: T) {
+        self.push_json(value.to_json());
+    }
+}
+
+impl<A, T: Iterator<A>> ListBuilder {
+    pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
+        let mut stop = false;
+        while stop {
+            let a = iter.next();
+            if a.is_some() {
+                let mut bldr = ObjectBuilder::new();
+                func(a.unwrap(), &mut bldr);
+                self.push(bldr.move_to_json())
+            } else {
+                stop = true;
+            }
+        }
+    }
+
+    pub fn lists(&mut self, iter: &mut T, func: |A, &mut ListBuilder|) {
+        let mut stop = false;
+        while stop {
+            let a = iter.next();
+            if a.is_some() {
+                let mut bldr = ListBuilder::new();
+                func(a.unwrap(), &mut bldr);
+                self.push(bldr.move_to_json())
+            } else {
+                stop = true;
+            }
+        }
+    }
+
+    pub fn map(&mut self, iter: &mut T, func: |A| -> Json) {
+        let mut stop = false;
+        while stop {
+            let a = iter.next();
+            if a.is_some() {
+                self.push(func(a.unwrap()))
+            } else {
+                stop = true;
+            }
+        }
+    }
+}
+
 impl ToJson for ListBuilder {
     fn to_json(&self) -> Json {
          if self.null { json::Null } else { self.list.to_json() }
     }
 }
 
-struct ObjectBuilder {
+pub struct ObjectBuilder {
     object: JsonObject,
     null: bool
 }
@@ -112,15 +156,27 @@ impl ObjectBuilder {
     pub fn null(&mut self) {
         self.null = true;
     }
+
+    pub fn index(&mut self) -> bool {
+        true    
+    }
 }
 
 impl<V: ToJson, N: ToString> ObjectBuilder {
     pub fn set(&mut self, name: N, value: V) {
-        self.object.insert(name.to_string(), value.to_json());
+        self.set_json(name.to_string(), value.to_json());
+    }
+
+    pub fn call(&mut self, name: N, value: V) {
+        self.set(name, value);
     }
 }
 
 impl<N: ToString> ObjectBuilder {
+    pub fn set_json(&mut self, name: N, value: Json) {
+        self.object.insert(name.to_string(), value);
+    }
+
     pub fn list(&mut self, name: N, builder: |&mut ListBuilder|) {
         self.set(name, ListBuilder::build(builder).move_to_json());
     }
@@ -137,6 +193,17 @@ impl ToJson for ObjectBuilder {
 }
 
 #[test]
-fn test() {
-    let b = ListBuilder::new();
+fn simple_object() {
+    ObjectBuilder::build(|json| {
+        json.set("first_name", "Luke".to_string()); 
+        json.set("last_name", "Skywalker".to_string());  
+    });
+}
+
+#[test]
+fn simple_list() {
+    ListBuilder::build(|json| {
+        json.push("Luke".to_string()); 
+        json.push("Skywalker".to_string());  
+    });
 }
