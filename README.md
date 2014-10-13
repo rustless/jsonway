@@ -10,7 +10,7 @@ JsonWay gives you a simple DSL for declaring JSON structures. This is particular
 git = "https://github.com/rustless/jsonway"
 ```
 
-[API docs](http://jsonway.rustless.org/doc/jsonway/)
+[API docs](http://rustless.org/jsonway/doc/jsonway/)
 
 ## Examples
 
