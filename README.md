@@ -1,8 +1,18 @@
 # JsonWay
 
+[![Build Status](https://travis-ci.org/rustless/jsonway.svg?branch=master)](https://travis-ci.org/rustless/jsonway)
+
 JsonWay gives you a simple DSL for declaring JSON structures. This is particularly helpful when the generation process is fraught with conditionals and loops.
 
-Example: 
+```toml
+# Cargo.toml
+[dependencies.jsonway]
+git = "https://github.com/rustless/jsonway"
+```
+
+[API docs](http://jsonway.rustless.org/doc/jsonway/)
+
+## Examples
 
 ``` rust
 ObjectBuilder::build(|json| {
