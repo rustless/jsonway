@@ -12,11 +12,13 @@ pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
 pub use list_builder::ListBuilder;
 pub use serializer::Serializer;
+pub use list_serializer::ListSerializer;
 
 pub mod list_builder;
 pub mod object_builder;
 pub mod mutable_json;
 pub mod serializer;
+pub mod list_serializer;
 
 pub struct JsonWay;
 
