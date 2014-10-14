@@ -54,6 +54,7 @@ impl ObjectBuilder {
         self.skip = true;
     }
 
+    // Set custom root for result Json object
     pub fn root(&mut self, root: &str) {
         self.root = Some(root.to_string());
     }
