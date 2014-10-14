@@ -19,18 +19,27 @@ pub mod mutable_json;
 
 pub struct ListBuilder {
     list: JsonList,
-    null: bool
+    null: bool,
+    skip: bool
 }
 
 impl ListBuilder {
 
     pub fn new() -> ListBuilder {
-        ListBuilder { list: vec![], null: false }
+        ListBuilder { 
+            list: vec![], 
+            null: false,
+            skip: false
+        }
     }
 
     pub fn from_json(list: Json) -> Option<ListBuilder> {
         match list {
-            json::List(list) => Some(ListBuilder { list: list, null: false }),
+            json::List(list) => Some(ListBuilder { 
+                list: list, 
+                null: false,
+                skip: false
+            }),
             _ => None
         }
     }
@@ -65,6 +74,10 @@ impl ListBuilder {
     pub fn null(&mut self) {
         self.null = true;
     }
+
+    pub fn skip(&mut self) {
+        self.skip = true;
+    }
 }
 
 impl<T: ToJson> ListBuilder {
@@ -76,12 +89,14 @@ impl<T: ToJson> ListBuilder {
 impl<A, T: Iterator<A>> ListBuilder {
     pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
         let mut stop = false;
-        while stop {
+        while !stop {
             let a = iter.next();
             if a.is_some() {
                 let mut bldr = ObjectBuilder::new();
                 func(a.unwrap(), &mut bldr);
-                self.push(bldr.move_to_json())
+                if !bldr.skip {
+                    self.push(bldr.move_to_json())
+                }
             } else {
                 stop = true;
             }
@@ -90,12 +105,14 @@ impl<A, T: Iterator<A>> ListBuilder {
 
     pub fn lists(&mut self, iter: &mut T, func: |A, &mut ListBuilder|) {
         let mut stop = false;
-        while stop {
+        while !stop {
             let a = iter.next();
             if a.is_some() {
                 let mut bldr = ListBuilder::new();
                 func(a.unwrap(), &mut bldr);
-                self.push(bldr.move_to_json())
+                if !bldr.skip {
+                    self.push(bldr.move_to_json())
+                }
             } else {
                 stop = true;
             }
@@ -104,7 +121,7 @@ impl<A, T: Iterator<A>> ListBuilder {
 
     pub fn map(&mut self, iter: &mut T, func: |A| -> Json) {
         let mut stop = false;
-        while stop {
+        while !stop {
             let a = iter.next();
             if a.is_some() {
                 self.push(func(a.unwrap()))
@@ -123,17 +140,26 @@ impl ToJson for ListBuilder {
 
 pub struct ObjectBuilder {
     object: JsonObject,
-    null: bool
+    null: bool,
+    skip: bool
 }
 
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
-        ObjectBuilder { object: TreeMap::new(), null: false }
+        ObjectBuilder { 
+            object: TreeMap::new(), 
+            null: false,
+            skip: false
+        }
     }
 
     pub fn from_json(object: Json) -> Option<ObjectBuilder> {
         match object {
-            json::Object(object) => Some(ObjectBuilder { object: object, null: false }),
+            json::Object(object) => Some(ObjectBuilder { 
+                object: object, 
+                null: false,
+                skip: false
+            }),
             _ => None
         }
     }
@@ -159,6 +185,10 @@ impl ObjectBuilder {
 
     pub fn index(&mut self) -> bool {
         true    
+    }
+
+    pub fn skip(&mut self) {
+        self.skip = true;
     }
 }
 
@@ -193,7 +223,7 @@ impl ToJson for ObjectBuilder {
 }
 
 #[test]
-fn simple_object() {
+fn simple() {
     ObjectBuilder::build(|json| {
         json.set("first_name", "Luke".to_string()); 
         json.set("last_name", "Skywalker".to_string());
@@ -211,4 +241,57 @@ fn simple_object() {
             json.push("Darth Sidious (Briefly)".to_string());
         });
     });
+}
+
+#[test]
+fn iterations() {
+
+    #[deriving(Show)]
+    enum Side {
+        Light,
+        Dark
+    }
+
+    struct Jedi {
+        name: String,
+        side: Side
+    }
+
+    let jedi = vec![
+        Jedi { name: "Saes Rrogon".to_string(), side: Dark },
+        Jedi { name: "Qui-Gon Jinn".to_string(), side: Light },
+        Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
+    ];
+
+    let light_jedi_objects_list = ListBuilder::build(|json| {
+        json.objects(&mut jedi.iter(), |jedi, json| {
+            match jedi.side {
+                Light => {
+                    json.set("name".to_string(), jedi.name.to_string());
+                    json.set("side".to_string(), jedi.side.to_string());
+                },
+                Dark => json.skip()
+            }
+        })
+    });
+
+    println!("{}", light_jedi_objects_list.move_to_json().to_pretty_str());
+
+    let light_jedi_tuple_list = ListBuilder::build(|json| {
+        json.lists(&mut jedi.iter(), |jedi, json| {
+            match jedi.side {
+                Light => {
+                    json.push(jedi.name.to_string());
+                    json.push(jedi.side.to_string());
+                },
+                Dark => json.skip()
+            }
+        })
+    });
+
+    println!("{}", light_jedi_tuple_list.move_to_json().to_pretty_str());
+
+    // uncomment to dump
+    // fail!("");
+
 }
