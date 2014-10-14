@@ -222,9 +222,21 @@ impl ToJson for ObjectBuilder {
     }
 }
 
+pub struct JsonWay;
+
+impl JsonWay {
+    pub fn list(builder: |&mut ListBuilder|) -> ListBuilder {
+        ListBuilder::build(builder)
+    }    
+
+    pub fn object(builder: |&mut ObjectBuilder|) -> ObjectBuilder {
+        ObjectBuilder::build(builder)
+    }
+}
+
 #[test]
 fn simple() {
-    ObjectBuilder::build(|json| {
+    JsonWay::object(|json| {
         json.set("first_name", "Luke".to_string()); 
         json.set("last_name", "Skywalker".to_string());
 
@@ -263,7 +275,7 @@ fn iterations() {
         Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
     ];
 
-    let light_jedi_objects_list = ListBuilder::build(|json| {
+    let light_jedi_objects_list = JsonWay::list(|json| {
         json.objects(&mut jedi.iter(), |jedi, json| {
             match jedi.side {
                 Light => {
@@ -277,7 +289,7 @@ fn iterations() {
 
     println!("{}", light_jedi_objects_list.move_to_json().to_pretty_str());
 
-    let light_jedi_tuple_list = ListBuilder::build(|json| {
+    let light_jedi_tuple_list = JsonWay::list(|json| {
         json.lists(&mut jedi.iter(), |jedi, json| {
             match jedi.side {
                 Light => {
