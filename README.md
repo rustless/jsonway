@@ -15,7 +15,7 @@ git = "https://github.com/rustless/jsonway"
 ## Simple example
 
 ``` rust
-ObjectBuilder::build(|json| {
+JsonWay::object(|json| {
     json.set("first_name", "Luke".to_string()); 
     json.set("last_name", "Skywalker".to_string());
 
@@ -55,7 +55,7 @@ let jedi = vec![
     Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
 ];
 
-let light_jedi_objects_list = ListBuilder::build(|json| {
+let light_jedi_objects_list = JsonWay::list(|json| {
     // Use `objects` method to make list of objects
     json.objects(&mut jedi.iter(), |jedi, json| {
         match jedi.side {
@@ -79,7 +79,7 @@ let light_jedi_objects_list = ListBuilder::build(|json| {
 //   }
 // ]
 
-let light_jedi_tuple_list = ListBuilder::build(|json| {
+let light_jedi_tuple_list = JsonWay::list(|json| {
     // Use `lists` method to make list of lists
     json.lists(&mut jedi.iter(), |jedi, json| {
         match jedi.side {
