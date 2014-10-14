@@ -8,7 +8,7 @@ pub struct ListBuilder {
     list: JsonList,
     pub null: bool,
     pub skip: bool,
-    root: Option<String>
+    pub root: Option<String>
 }
 
 /// Use ListBuilder to produce JSON arrays
@@ -75,6 +75,10 @@ impl ListBuilder {
         self.root = Some(root.to_string());
     }
 
+    pub fn has_root(&mut self) -> bool {
+        self.root.is_some()
+    }
+
     /// Move out internal JSON value.
     pub fn unwrap(self) -> Json {
         if self.root.is_some() {
@@ -109,48 +113,30 @@ impl<T: ToJson> ListBuilder {
 impl<A, T: Iterator<A>> ListBuilder {
     /// Fill this list by objects builded from iterator.
     pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
-        let mut stop = false;
-        while !stop {
-            let a = iter.next();
-            if a.is_some() {
-                let mut bldr = ObjectBuilder::new();
-                func(a.unwrap(), &mut bldr);
-                if !bldr.skip {
-                    self.push(bldr.unwrap())
-                }
-            } else {
-                stop = true;
-            }
+        for a in *iter {
+            let mut bldr = ObjectBuilder::new();
+            func(a, &mut bldr);
+            if !bldr.skip {
+                self.push(bldr.unwrap())
+            }    
         }
     }
 
     // Fill this list by lists builded from iterator.
     pub fn lists(&mut self, iter: &mut T, func: |A, &mut ListBuilder|) {
-        let mut stop = false;
-        while !stop {
-            let a = iter.next();
-            if a.is_some() {
-                let mut bldr = ListBuilder::new();
-                func(a.unwrap(), &mut bldr);
-                if !bldr.skip {
-                    self.push(bldr.unwrap())
-                }
-            } else {
-                stop = true;
-            }
+        for a in *iter {
+            let mut bldr = ListBuilder::new();
+            func(a, &mut bldr);
+            if !bldr.skip {
+                self.push(bldr.unwrap())
+            }    
         }
     }
 
     /// Fill this list by JSON values builded from iterator.
     pub fn map(&mut self, iter: &mut T, func: |A| -> Json) {
-        let mut stop = false;
-        while !stop {
-            let a = iter.next();
-            if a.is_some() {
-                self.push(func(a.unwrap()))
-            } else {
-                stop = true;
-            }
+        for a in *iter {
+            self.push(func(a))      
         }
     }
 }

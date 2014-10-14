@@ -9,7 +9,7 @@ pub struct ObjectBuilder {
     object: JsonObject,
     pub null: bool,
     pub skip: bool,
-    root: Option<String>
+    pub root: Option<String>
 }
 
 /// ObjectBuilder is used to produce JSON objects
@@ -57,6 +57,10 @@ impl ObjectBuilder {
     // Set custom root for result Json object
     pub fn root(&mut self, root: &str) {
         self.root = Some(root.to_string());
+    }
+
+    pub fn has_root(&mut self) -> bool {
+        self.root.is_some()
     }
 
     /// Move out internal JSON value.
