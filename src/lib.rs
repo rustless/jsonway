@@ -236,7 +236,7 @@ impl JsonWay {
 
 #[test]
 fn simple() {
-    JsonWay::object(|json| {
+    let object = JsonWay::object(|json| {
         json.set("first_name", "Luke".to_string()); 
         json.set("last_name", "Skywalker".to_string());
 
@@ -253,6 +253,12 @@ fn simple() {
             json.push("Darth Sidious (Briefly)".to_string());
         });
     });
+
+    println!("{}", object.move_to_json().to_pretty_str());
+
+    // uncomment to dump
+    // fail!("");
+
 }
 
 #[test]
