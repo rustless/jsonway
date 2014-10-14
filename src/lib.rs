@@ -23,6 +23,7 @@ pub struct ListBuilder {
     skip: bool
 }
 
+/// Use ListBuilder to produce JSON arrays
 impl ListBuilder {
 
     pub fn new() -> ListBuilder {
@@ -33,6 +34,7 @@ impl ListBuilder {
         }
     }
 
+    /// Initialize builder with initial value.
     pub fn from_json(list: Json) -> Option<ListBuilder> {
         match list {
             json::List(list) => Some(ListBuilder { 
@@ -44,6 +46,7 @@ impl ListBuilder {
         }
     }
 
+    /// Create new ListBuilder, pass it to closure as mutable ref and return.
     pub fn build(builder: |&mut ListBuilder|) -> ListBuilder {
         let mut bldr = ListBuilder::new();
         builder(&mut bldr);  
@@ -51,7 +54,8 @@ impl ListBuilder {
         bldr 
     }
 
-    pub fn move_to_json(self) -> Json {
+    /// Move out internal JSON value.
+    pub fn unwrap(self) -> Json {
         if self.null {
             json::Null
         } else {
@@ -59,34 +63,42 @@ impl ListBuilder {
         }
     }
 
+    /// Push JSON value to list.
     pub fn push_json(&mut self, value: Json) {
         self.list.push(value);
     }
 
+    /// Create new list and push it.
     pub fn list(&mut self, builder: |&mut ListBuilder|) {
-        self.push(ListBuilder::build(builder).move_to_json());
+        self.push(ListBuilder::build(builder).unwrap());
     }
 
+    /// Create new object and push it
     pub fn object(&mut self, builder: |&mut ObjectBuilder|) {
-        self.push(ObjectBuilder::build(builder).move_to_json());
+        self.push(ObjectBuilder::build(builder).unwrap());
     }
 
+    /// It you call `null`, this list will be converted to null when converting
+    /// to raw JSON value.
     pub fn null(&mut self) {
         self.null = true;
     }
 
+    /// It you call `skip`, this list will be skipped.
     pub fn skip(&mut self) {
         self.skip = true;
     }
 }
 
 impl<T: ToJson> ListBuilder {
+    /// Push to list something that can be converted to JSON.
     pub fn push(&mut self, value: T) {
         self.push_json(value.to_json());
     }
 }
 
 impl<A, T: Iterator<A>> ListBuilder {
+    /// Fill this list by objects builded from iterator.
     pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
         let mut stop = false;
         while !stop {
@@ -95,7 +107,7 @@ impl<A, T: Iterator<A>> ListBuilder {
                 let mut bldr = ObjectBuilder::new();
                 func(a.unwrap(), &mut bldr);
                 if !bldr.skip {
-                    self.push(bldr.move_to_json())
+                    self.push(bldr.unwrap())
                 }
             } else {
                 stop = true;
@@ -103,6 +115,7 @@ impl<A, T: Iterator<A>> ListBuilder {
         }
     }
 
+    // Fill this list by lists builded from iterator.
     pub fn lists(&mut self, iter: &mut T, func: |A, &mut ListBuilder|) {
         let mut stop = false;
         while !stop {
@@ -111,7 +124,7 @@ impl<A, T: Iterator<A>> ListBuilder {
                 let mut bldr = ListBuilder::new();
                 func(a.unwrap(), &mut bldr);
                 if !bldr.skip {
-                    self.push(bldr.move_to_json())
+                    self.push(bldr.unwrap())
                 }
             } else {
                 stop = true;
@@ -119,6 +132,7 @@ impl<A, T: Iterator<A>> ListBuilder {
         }
     }
 
+    /// Fill this list by JSON values builded from iterator.
     pub fn map(&mut self, iter: &mut T, func: |A| -> Json) {
         let mut stop = false;
         while !stop {
@@ -133,6 +147,7 @@ impl<A, T: Iterator<A>> ListBuilder {
 }
 
 impl ToJson for ListBuilder {
+    /// Copy self to new JSON instance.
     fn to_json(&self) -> Json {
          if self.null { json::Null } else { self.list.to_json() }
     }
@@ -144,6 +159,8 @@ pub struct ObjectBuilder {
     skip: bool
 }
 
+
+/// ListBuilder is used to produce JSON arrays
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
         ObjectBuilder { 
@@ -153,6 +170,7 @@ impl ObjectBuilder {
         }
     }
 
+    /// Initialize builder with initial value.
     pub fn from_json(object: Json) -> Option<ObjectBuilder> {
         match object {
             json::Object(object) => Some(ObjectBuilder { 
@@ -164,6 +182,7 @@ impl ObjectBuilder {
         }
     }
 
+    /// Create new builder, pass it to closure as mutable ref and return.
     pub fn build(builder: |&mut ObjectBuilder|) -> ObjectBuilder {
         let mut bldr = ObjectBuilder::new();
         builder(&mut bldr);  
@@ -171,7 +190,8 @@ impl ObjectBuilder {
         bldr 
     }
 
-    pub fn move_to_json(self) -> Json {
+    /// Move out internal JSON value.
+    pub fn unwrap(self) -> Json {
         if self.null {
             json::Null
         } else {
@@ -179,44 +199,49 @@ impl ObjectBuilder {
         }
     }
 
+    /// It you call `null`, this list will be converted to null.
     pub fn null(&mut self) {
         self.null = true;
     }
 
-    pub fn index(&mut self) -> bool {
-        true    
-    }
-
+    /// It you call `skip`, this list will be skipped.
     pub fn skip(&mut self) {
         self.skip = true;
     }
 }
 
 impl<V: ToJson, N: ToString> ObjectBuilder {
+    /// Set object's `name` field with something that can be
+    /// converted to Json value.
     pub fn set(&mut self, name: N, value: V) {
         self.set_json(name.to_string(), value.to_json());
     }
 
+    /// Stub for future use
     pub fn call(&mut self, name: N, value: V) {
         self.set(name, value);
     }
 }
 
 impl<N: ToString> ObjectBuilder {
+    /// Set object's `name` field with raw Json value.
     pub fn set_json(&mut self, name: N, value: Json) {
         self.object.insert(name.to_string(), value);
     }
 
+    /// Build new list and set object's `name` field with it.
     pub fn list(&mut self, name: N, builder: |&mut ListBuilder|) {
-        self.set(name, ListBuilder::build(builder).move_to_json());
+        self.set(name, ListBuilder::build(builder).unwrap());
     }
 
+    /// Build new object and set object's `name` field with it.
     pub fn object(&mut self, name: N, builder: |&mut ObjectBuilder|) {
-        self.set(name, ObjectBuilder::build(builder).move_to_json());
+        self.set(name, ObjectBuilder::build(builder).unwrap());
     }
 }
 
 impl ToJson for ObjectBuilder {
+    /// Copy self to new JSON instance.
     fn to_json(&self) -> Json {
         if self.null { json::Null } else { self.object.to_json() }
     }
@@ -225,10 +250,12 @@ impl ToJson for ObjectBuilder {
 pub struct JsonWay;
 
 impl JsonWay {
+    /// Create and return new ListBuilder
     pub fn list(builder: |&mut ListBuilder|) -> ListBuilder {
         ListBuilder::build(builder)
     }    
 
+    /// Create and return new ObjectBuilder
     pub fn object(builder: |&mut ObjectBuilder|) -> ObjectBuilder {
         ObjectBuilder::build(builder)
     }
@@ -254,7 +281,7 @@ fn simple() {
         });
     });
 
-    println!("{}", object.move_to_json().to_pretty_str());
+    println!("{}", object.unwrap().to_pretty_str());
 
     // uncomment to dump
     // fail!("");
@@ -293,7 +320,7 @@ fn iterations() {
         })
     });
 
-    println!("{}", light_jedi_objects_list.move_to_json().to_pretty_str());
+    println!("{}", light_jedi_objects_list.unwrap().to_pretty_str());
 
     let light_jedi_tuple_list = JsonWay::list(|json| {
         json.lists(&mut jedi.iter(), |jedi, json| {
@@ -307,7 +334,7 @@ fn iterations() {
         })
     });
 
-    println!("{}", light_jedi_tuple_list.move_to_json().to_pretty_str());
+    println!("{}", light_jedi_tuple_list.unwrap().to_pretty_str());
 
     // uncomment to dump
     // fail!("");
