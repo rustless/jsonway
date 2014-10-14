@@ -32,6 +32,22 @@ JsonWay::object(|json| {
         json.push("Darth Sidious (Briefly)".to_string());
     });
 });
+
+// {
+//   "first_name": "Luke",
+//   "last_name": "Skywalker",
+//   "info": {
+//     "born": "19 BBY",
+//     "died": "Between 45 ABY and 137 ABY",
+//     "homeworld": "Tatooine"
+//   },
+//   "masters": [
+//     "Obi-Wan Kenobi",
+//     "Yoda",
+//     "Joruus C'baoth (Briefly)",
+//     "Darth Sidious (Briefly)"
+//   ]
+// }
 ```
 
 ## Build with iterators
@@ -103,5 +119,18 @@ let light_jedi_tuple_list = JsonWay::list(|json| {
 //   ]
 // ]
 
+~~~
+
+You can explicitly make `JsonWay` object return `null` if you want:
+
+~~~rust
+// .. 
+match jedi.side {
+    Light => {
+        json.push(jedi.name.to_string());
+        json.push(jedi.side.to_string());
+    },
+    Dark => json.null()
+}
 ~~~
 
