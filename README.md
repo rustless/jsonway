@@ -12,7 +12,7 @@ git = "https://github.com/rustless/jsonway"
 
 [API docs](http://rustless.org/jsonway/doc/jsonway/)
 
-## Examples
+## Simple example
 
 ``` rust
 ObjectBuilder::build(|json| {
@@ -33,3 +33,75 @@ ObjectBuilder::build(|json| {
     });
 });
 ```
+
+## Build with iterators
+
+~~~rust
+
+#[deriving(Show)]
+enum Side {
+    Light,
+    Dark
+}
+
+struct Jedi {
+    name: String,
+    side: Side
+}
+
+let jedi = vec![
+    Jedi { name: "Saes Rrogon".to_string(), side: Dark },
+    Jedi { name: "Qui-Gon Jinn".to_string(), side: Light },
+    Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
+];
+
+let light_jedi_objects_list = ListBuilder::build(|json| {
+    // Use `objects` method to make list of objects
+    json.objects(&mut jedi.iter(), |jedi, json| {
+        match jedi.side {
+            Light => {
+                json.set("name".to_string(), jedi.name.to_string());
+                json.set("side".to_string(), jedi.side.to_string());
+            },
+            Dark => json.skip()
+        }
+    })
+});
+
+// [
+//   {
+//     "name": "Qui-Gon Jinn",
+//     "side": "Light"
+//   },
+//   {
+//     "name": "Obi-Wan Kenobi",
+//     "side": "Light"
+//   }
+// ]
+
+let light_jedi_tuple_list = ListBuilder::build(|json| {
+    // Use `lists` method to make list of lists
+    json.lists(&mut jedi.iter(), |jedi, json| {
+        match jedi.side {
+            Light => {
+                json.push(jedi.name.to_string());
+                json.push(jedi.side.to_string());
+            },
+            Dark => json.skip()
+        }
+    })
+});
+
+// [
+//   [
+//     "Qui-Gon Jinn",
+//     "Light"
+//   ],
+//   [
+//     "Obi-Wan Kenobi",
+//     "Light"
+//   ]
+// ]
+
+~~~
+
