@@ -106,3 +106,78 @@ pub trait ObjectSerializer<T> {
         bldr.unwrap()
     }
 }
+
+/// Provides functionality to create custom JSON presenters for your structs.
+/// 
+/// ## Example 
+/// 
+/// ```rust
+/// use jsonway::{ObjectBuilder, ObjectScopeSerializer};
+/// 
+/// struct User {
+///     id: uint,
+///     is_admin: bool
+/// }
+/// 
+/// struct Jedi {
+///     name: String,
+///     secret: String
+/// }
+/// 
+/// struct JediSerializer;
+/// 
+/// impl ObjectScopeSerializer<Jedi, User> for JediSerializer {
+///     fn root(&self) -> Option<&str> { Some("jedi") }
+///     fn build(&self, jedi: &Jedi, current_user: &User, json: &mut ObjectBuilder) {
+///         json.set("name", jedi.name.to_string());
+/// 
+///         if current_user.is_admin {
+///             json.set("secret", jedi.secret.to_string());
+///         }
+///     }
+/// }
+/// 
+/// let jedi = Jedi { 
+///     name: "Palpatine".to_string(), 
+///     secret: "Dark side".to_string() 
+/// };
+///
+/// let current_user = User { id: 1, is_admin: true };
+/// let json = JediSerializer.serialize(&jedi, &current_user);
+///
+/// assert_eq!(
+///     json.find_path(&[
+///         &"jedi".to_string(),
+///         &"name".to_string(),
+///     ]).unwrap().as_string().unwrap(), 
+///     "Palpatine"
+/// )
+///
+/// assert_eq!(
+///     json.find_path(&[
+///         &"jedi".to_string(),
+///         &"secret".to_string(),
+///     ]).unwrap().as_string().unwrap(), 
+///     "Dark side"
+/// )
+///
+/// ```
+pub trait ObjectScopeSerializer<T, S> {
+
+    fn build(&self, &T, &S, &mut ObjectBuilder);
+    
+    #[inline]
+    fn root(&self) -> Option<&str> {
+        None
+    }
+
+    fn serialize(&mut self, obj: &T, scope: &S) -> Json {
+        let mut bldr = ObjectBuilder::new();
+        let root = self.root();
+        if root.is_some() {
+            bldr.root(root.unwrap())
+        }
+        self.build(obj, scope, &mut bldr);
+        bldr.unwrap()
+    }
+}
