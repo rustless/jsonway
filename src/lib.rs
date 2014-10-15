@@ -22,6 +22,33 @@ pub mod list_serializer;
 
 pub struct JsonWay;
 
+/// ```rust
+/// use jsonway::JsonWay;
+///
+/// let json = JsonWay::object(|json| {
+///     json.set("first_name", "Luke".to_string()); 
+///     json.set("last_name", "Skywalker".to_string());
+///
+///     json.object("info", |json| {
+///         json.set("homeworld", "Tatooine".to_string());
+///         json.set("born", "19 BBY".to_string());
+///         json.set("died", "Between 45 ABY and 137 ABY".to_string());
+///     });
+///
+///     json.list("masters", |json| {
+///         json.push("Obi-Wan Kenobi".to_string());
+///         json.push("Yoda".to_string());
+///         json.push("Joruus C'baoth (Briefly)".to_string());
+///         json.push("Darth Sidious (Briefly)".to_string());
+///     });
+/// }).unwrap();
+///
+/// assert_eq!(json.find(&"first_name".to_string()).unwrap().as_string().unwrap(), "Luke");
+/// assert_eq!(json.find(&"last_name".to_string()).unwrap().as_string().unwrap(), "Skywalker");
+///
+/// assert!(json.find(&"info".to_string()).unwrap().is_object());
+/// assert!(json.find(&"masters".to_string()).unwrap().is_list());
+/// ```
 impl JsonWay {
     /// Create and return new ListBuilder
     pub fn list(builder: |&mut ListBuilder|) -> ListBuilder {
@@ -32,84 +59,4 @@ impl JsonWay {
     pub fn object(builder: |&mut ObjectBuilder|) -> ObjectBuilder {
         ObjectBuilder::build(builder)
     }
-}
-
-#[test]
-fn simple() {
-    let object = JsonWay::object(|json| {
-        json.set("first_name", "Luke".to_string()); 
-        json.set("last_name", "Skywalker".to_string());
-
-        json.object("info", |json| {
-            json.set("homeworld", "Tatooine".to_string());
-            json.set("born", "19 BBY".to_string());
-            json.set("died", "Between 45 ABY and 137 ABY".to_string());
-        });
-
-        json.list("masters", |json| {
-            json.push("Obi-Wan Kenobi".to_string());
-            json.push("Yoda".to_string());
-            json.push("Joruus C'baoth (Briefly)".to_string());
-            json.push("Darth Sidious (Briefly)".to_string());
-        });
-    });
-
-    println!("{}", object.unwrap().to_pretty_str());
-
-    // uncomment to dump
-    // fail!("");
-
-}
-
-#[test]
-fn iterations() {
-
-    #[deriving(Show)]
-    enum Side {
-        Light,
-        Dark
-    }
-
-    struct Jedi {
-        name: String,
-        side: Side
-    }
-
-    let jedi = vec![
-        Jedi { name: "Saes Rrogon".to_string(), side: Dark },
-        Jedi { name: "Qui-Gon Jinn".to_string(), side: Light },
-        Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
-    ];
-
-    let light_jedi_objects_list = JsonWay::list(|json| {
-        json.objects(&mut jedi.iter(), |jedi, json| {
-            match jedi.side {
-                Light => {
-                    json.set("name".to_string(), jedi.name.to_string());
-                    json.set("side".to_string(), jedi.side.to_string());
-                },
-                Dark => json.skip()
-            }
-        })
-    });
-
-    println!("{}", light_jedi_objects_list.unwrap().to_pretty_str());
-
-    let light_jedi_tuple_list = JsonWay::list(|json| {
-        json.lists(&mut jedi.iter(), |jedi, json| {
-            match jedi.side {
-                Light => {
-                    json.push(jedi.name.to_string());
-                    json.push(jedi.side.to_string());
-                },
-                Dark => json.skip()
-            }
-        })
-    });
-
-    println!("{}", light_jedi_tuple_list.unwrap().to_pretty_str());
-
-    // uncomment to dump
-    // fail!("");
-
 }
