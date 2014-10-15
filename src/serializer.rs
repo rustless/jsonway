@@ -26,6 +26,14 @@ use object_builder::ObjectBuilder;
 ///
 /// let jedi = Jedi { name: "Saes Rrogon".to_string() };
 /// let json = JediSerializer{jedi: &jedi}.serialize();
+///
+/// assert_eq!(
+///     json.find_path(&[
+///         &"jedi".to_string(),
+///         &"name".to_string(),
+///     ]).unwrap().as_string().unwrap(), 
+///     "Saes Rrogon"
+/// )
 /// ```
 pub trait Serializer {
 
@@ -70,6 +78,14 @@ pub trait Serializer {
 ///
 /// let jedi = Jedi { name: "Saes Rrogon".to_string() };
 /// let json = JediSerializer.serialize(&jedi);
+///
+/// assert_eq!(
+///     json.find_path(&[
+///         &"jedi".to_string(),
+///         &"name".to_string(),
+///     ]).unwrap().as_string().unwrap(), 
+///     "Saes Rrogon"
+/// )
 /// ```
 pub trait ObjectSerializer<T> {
 
