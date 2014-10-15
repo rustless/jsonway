@@ -207,7 +207,7 @@ struct JediSerializer;
 
 impl ObjectScopeSerializer<Jedi, User> for JediSerializer {
     fn root(&self) -> Option<&str> { Some("jedi") }
-    fn build(&self, jedi: &Jedi, current_user: &User, json: &mut ctBuilder) {
+    fn build(&self, jedi: &Jedi, current_user: &User, json: &mut ObjectBuilder) {
         json.set("name", jedi.name.to_string());
 
         if current_user.is_admin {
