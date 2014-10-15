@@ -134,3 +134,98 @@ match jedi.side {
 }
 ~~~
 
+## Serializers
+
+### Serializier
+
+Provides convention and functionality to create custom JSON presenters for any struct.
+
+```
+use jsonway::{ObjectBuilder, Serializer};
+
+struct Jedi {
+    name: String
+}
+
+struct JediSerializer<'a> {
+    jedi: &'a Jedi
+}
+
+impl<'a> Serializer for JediSerializer<'a> {
+    fn root(&self) -> Option<&str> { Some("jedi") }
+    fn build(&self, json: &mut ObjectBuilder) {
+        json.set("name", self.jedi.name.to_string());
+    }
+}
+
+let jedi = Jedi { name: "Saes Rrogon".to_string() };
+let json = JediSerializer{jedi: &jedi}.serialize();
+```
+
+### ObjectSerializer
+
+`ObjectSerializer<T>` is a generic struct for single `object:T` serialization.
+
+```rust
+use jsonway::{ObjectBuilder, ObjectSerializer};
+
+struct Jedi {
+    name: String
+}
+
+struct JediSerializer;
+
+impl ObjectSerializer<Jedi> for JediSerializer {
+    fn root(&self) -> Option<&str> { Some("jedi") }
+    fn build(&self, jedi: &Jedi, json: &mut ObjectBuilder) {
+        json.set("name", jedi.name.to_string());
+    }
+}
+
+let jedi = Jedi { name: "Saes Rrogon".to_string() };
+let json = JediSerializer.serialize(&jedi);
+```
+
+### ObjectScopeSerializer
+
+`ObjectScopeSerializer<T, S>` is a generic struct for `object:T` and `scope:S` serialization.
+
+```rust
+use jsonway::{ObjectBuilder, ObjectScopeSerializer};
+
+struct User {
+    id: uint,
+    is_admin: bool
+}
+
+struct Jedi {
+    name: String,
+    secret: String
+}
+
+struct JediSerializer;
+
+impl ObjectScopeSerializer<Jedi, User> for JediSerializer {
+    fn root(&self) -> Option<&str> { Some("jedi") }
+    fn build(&self, jedi: &Jedi, current_user: &User, json: &mut ctBuilder) {
+        json.set("name", jedi.name.to_string());
+
+        if current_user.is_admin {
+            json.set("secret", jedi.secret.to_string());
+        }
+    }
+}
+
+let jedi = Jedi { 
+    name: "Palpatine".to_string(), 
+    secret: "Dark side".to_string() 
+};
+let current_user = User { id: 1, is_admin: true };
+let json = JediSerializer.serialize(&jedi, &current_user);
+```
+
+## ListSerializer
+
+Provides convention and functionality to create custom JSON presenters for the list of resources including `meta` information.
+
+TODO: Example

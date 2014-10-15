@@ -11,7 +11,7 @@ extern crate serialize;
 pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
 pub use list_builder::ListBuilder;
-pub use serializer::{Serializer, ObjectSerializer};
+pub use serializer::{Serializer, ObjectSerializer, ObjectScopeSerializer};
 pub use list_serializer::ListSerializer;
 
 pub mod list_builder;
