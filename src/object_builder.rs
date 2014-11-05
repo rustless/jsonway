@@ -86,11 +86,11 @@ impl ObjectBuilder {
     }
 }
 
-impl<V: ToJson, N: ToString> ObjectBuilder {
+impl<V, N> ObjectBuilder where V: ToJson, N: ToString {
     /// Set object's `name` field with something that can be
     /// converted to Json value.
     pub fn set(&mut self, name: N, value: V) {
-        self.set_json(name.to_string(), value.to_json());
+        self.set_json(name, value.to_json());
     }
 
     /// Stub for future use
@@ -99,7 +99,7 @@ impl<V: ToJson, N: ToString> ObjectBuilder {
     }
 }
 
-impl<N: ToString> ObjectBuilder {
+impl<N> ObjectBuilder where N: ToString {
     /// Set object's `name` field with raw Json value.
     pub fn set_json(&mut self, name: N, value: Json) {
         self.object.insert(name.to_string(), value);
