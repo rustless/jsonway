@@ -29,8 +29,8 @@ use object_builder::ObjectBuilder;
 ///
 /// assert_eq!(
 ///     json.find_path(&[
-///         &"jedi".to_string(),
-///         &"name".to_string(),
+///         "jedi",
+///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Saes Rrogon"
 /// )
@@ -81,8 +81,8 @@ pub trait Serializer {
 ///
 /// assert_eq!(
 ///     json.find_path(&[
-///         &"jedi".to_string(),
-///         &"name".to_string(),
+///         "jedi",
+///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Saes Rrogon"
 /// )
@@ -147,16 +147,16 @@ pub trait ObjectSerializer<T> {
 ///
 /// assert_eq!(
 ///     json.find_path(&[
-///         &"jedi".to_string(),
-///         &"name".to_string(),
+///         "jedi",
+///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Palpatine"
 /// )
 ///
 /// assert_eq!(
 ///     json.find_path(&[
-///         &"jedi".to_string(),
-///         &"secret".to_string(),
+///         "jedi",
+///         "secret",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Dark side"
 /// )

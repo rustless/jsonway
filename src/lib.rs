@@ -43,11 +43,11 @@ pub struct JsonWay;
 ///     });
 /// }).unwrap();
 ///
-/// assert_eq!(json.find(&"first_name".to_string()).unwrap().as_string().unwrap(), "Luke");
-/// assert_eq!(json.find(&"last_name".to_string()).unwrap().as_string().unwrap(), "Skywalker");
+/// assert_eq!(json.find("first_name").unwrap().as_string().unwrap(), "Luke");
+/// assert_eq!(json.find("last_name").unwrap().as_string().unwrap(), "Skywalker");
 ///
-/// assert!(json.find(&"info".to_string()).unwrap().is_object());
-/// assert!(json.find(&"masters".to_string()).unwrap().is_list());
+/// assert!(json.find("info").unwrap().is_object());
+/// assert!(json.find("masters").unwrap().is_list());
 /// ```
 impl JsonWay {
     /// Create and return new ListBuilder
