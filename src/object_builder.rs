@@ -1,9 +1,9 @@
 use std::collections::TreeMap;
-use std::to_string::ToString;
+use collections::string::ToString;
 use serialize::json;
 use serialize::json::{Json, JsonObject, ToJson};
 
-use list_builder::ListBuilder;
+use array_builder::ArrayBuilder;
 
 pub struct ObjectBuilder {
     object: JsonObject,
@@ -44,12 +44,12 @@ impl ObjectBuilder {
         bldr 
     }
 
-    /// It you call `null`, this list will be converted to null.
+    /// It you call `null`, this object will be converted to null.
     pub fn null(&mut self) {
         self.null = true;
     }
 
-    /// It you call `skip`, this list will be skipped.
+    /// It you call `skip`, this object will be skipped.
     pub fn skip(&mut self) {
         self.skip = true;
     }
@@ -105,9 +105,9 @@ impl<N> ObjectBuilder where N: ToString {
         self.object.insert(name.to_string(), value);
     }
 
-    /// Build new list and set object's `name` field with it.
-    pub fn list(&mut self, name: N, builder: |&mut ListBuilder|) {
-        self.set(name, ListBuilder::build(builder).unwrap());
+    /// Build new array and set object's `name` field with it.
+    pub fn array(&mut self, name: N, builder: |&mut ArrayBuilder|) {
+        self.set(name, ArrayBuilder::build(builder).unwrap());
     }
 
     /// Build new object and set object's `name` field with it.

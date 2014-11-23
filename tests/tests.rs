@@ -15,52 +15,52 @@ struct Jedi {
     side: Side
 }
 
-fn jedi_list() -> Vec<Jedi> {
+fn jedi_array() -> Vec<Jedi> {
     vec![
-        Jedi { name: "Saes Rrogon".to_string(), side: Dark },
-        Jedi { name: "Qui-Gon Jinn".to_string(), side: Light },
-        Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
+        Jedi { name: "Saes Rrogon".to_string(), side: Side::Dark },
+        Jedi { name: "Qui-Gon Jinn".to_string(), side: Side::Light },
+        Jedi { name: "Obi-Wan Kenobi".to_string(), side: Side::Light }
     ]
 }
 
 #[test]
-fn simple_list_of_objects() {
-    let jedi_list = jedi_list();
+fn simple_array_of_objects() {
+    let jedi_array = jedi_array();
 
-    let json = JsonWay::list(|json| {
-        json.objects(&mut jedi_list.iter(), |jedi, json| {
+    let json = JsonWay::array(|json| {
+        json.objects(&mut jedi_array.iter(), |jedi, json| {
             match jedi.side {
-                Light => {
+                Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
                     json.set("side".to_string(), jedi.side.to_string());
                 },
-                Dark => json.skip()
+                Side::Dark => json.skip()
             }
         })
     }).unwrap();
 
-    let list = json.as_list().unwrap();
+    let array = json.as_array().unwrap();
 
-    assert_eq!(list.len(), 2);
+    assert_eq!(array.len(), 2);
 }
 
 #[test]
-fn simple_list_of_lists() {
-    let jedi_list = jedi_list();
+fn simple_array_of_arrays() {
+    let jedi_array = jedi_array();
 
-    let json = JsonWay::list(|json| {
-        json.objects(&mut jedi_list.iter(), |jedi, json| {
+    let json = JsonWay::array(|json| {
+        json.objects(&mut jedi_array.iter(), |jedi, json| {
             match jedi.side {
-                Light => {
+                Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
                     json.set("side".to_string(), jedi.side.to_string());
                 },
-                Dark => json.skip()
+                Side::Dark => json.skip()
             }
         })
     }).unwrap();
 
-    let list = json.as_list().unwrap();
+    let array = json.as_array().unwrap();
     
-    assert_eq!(list.len(), 2);
+    assert_eq!(array.len(), 2);
 }

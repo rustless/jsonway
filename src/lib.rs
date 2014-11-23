@@ -4,21 +4,22 @@
 #![crate_type = "rlib"]
 // #![deny(warnings)]
 // #![deny(bad_style)]
-#![feature(macro_rules, phase, tuple_indexing, unboxed_closure_sugar)]
+#![feature(macro_rules, phase, tuple_indexing)]
 
 extern crate serialize;
+extern crate collections;
 
 pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
-pub use list_builder::ListBuilder;
+pub use array_builder::ArrayBuilder;
 pub use serializer::{Serializer, ObjectSerializer, ObjectScopeSerializer};
-pub use list_serializer::ListSerializer;
+pub use array_serializer::ArraySerializer;
 
-pub mod list_builder;
+pub mod array_builder;
 pub mod object_builder;
 pub mod mutable_json;
 pub mod serializer;
-pub mod list_serializer;
+pub mod array_serializer;
 
 pub struct JsonWay;
 
@@ -35,7 +36,7 @@ pub struct JsonWay;
 ///         json.set("died", "Between 45 ABY and 137 ABY".to_string());
 ///     });
 ///
-///     json.list("masters", |json| {
+///     json.array("masters", |json| {
 ///         json.push("Obi-Wan Kenobi".to_string());
 ///         json.push("Yoda".to_string());
 ///         json.push("Joruus C'baoth (Briefly)".to_string());
@@ -47,12 +48,12 @@ pub struct JsonWay;
 /// assert_eq!(json.find("last_name").unwrap().as_string().unwrap(), "Skywalker");
 ///
 /// assert!(json.find("info").unwrap().is_object());
-/// assert!(json.find("masters").unwrap().is_list());
+/// assert!(json.find("masters").unwrap().is_array());
 /// ```
 impl JsonWay {
     /// Create and return new ListBuilder
-    pub fn list(builder: |&mut ListBuilder|) -> ListBuilder {
-        ListBuilder::build(builder)
+    pub fn array(builder: |&mut ArrayBuilder|) -> ArrayBuilder {
+        ArrayBuilder::build(builder)
     }    
 
     /// Create and return new ObjectBuilder

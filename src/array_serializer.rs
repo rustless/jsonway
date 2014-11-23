@@ -1,11 +1,11 @@
 use serialize::json::Json;
 
 use object_builder::ObjectBuilder;
-use list_builder::ListBuilder;
+use array_builder::ArrayBuilder;
 
-pub trait ListSerializer {
+pub trait ArraySerializer {
 
-    fn build(&self, &mut ListBuilder);
+    fn build(&self, &mut ArrayBuilder);
     
     #[inline]
     fn root(&self) -> Option<&str> {
@@ -18,7 +18,7 @@ pub trait ListSerializer {
     }
 
     fn serialize(&mut self) -> Json {
-        let mut bldr = ListBuilder::new();
+        let mut bldr = ArrayBuilder::new();
 
         let root = self.root();
         if root.is_some() {
