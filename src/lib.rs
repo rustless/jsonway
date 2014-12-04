@@ -1,9 +1,7 @@
 #![crate_name = "jsonway"]
-#![comment = "JSON builder for Rust"]
-#![license = "MIT"]
 #![crate_type = "rlib"]
-// #![deny(warnings)]
-// #![deny(bad_style)]
+#![deny(warnings)]
+#![deny(bad_style)]
 #![feature(macro_rules, phase, tuple_indexing)]
 
 extern crate serialize;

@@ -1,12 +1,11 @@
 use std::collections::TreeMap;
 use collections::string::ToString;
-use serialize::json;
-use serialize::json::{Json, JsonObject, ToJson};
+use serialize::json::{Json, Object, ToJson};
 
 use array_builder::ArrayBuilder;
 
 pub struct ObjectBuilder {
-    object: JsonObject,
+    object: Object,
     pub null: bool,
     pub skip: bool,
     pub root: Option<String>
@@ -26,7 +25,7 @@ impl ObjectBuilder {
     /// Initialize builder with initial value.
     pub fn from_json(object: Json) -> Option<ObjectBuilder> {
         match object {
-            json::Object(object) => Some(ObjectBuilder { 
+            Json::Object(object) => Some(ObjectBuilder { 
                 object: object, 
                 null: false,
                 skip: false,
@@ -70,7 +69,7 @@ impl ObjectBuilder {
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
-            json::Object(obj)
+            Json::Object(obj)
         } else {
             self.unwrap_internal()
         }
@@ -79,9 +78,9 @@ impl ObjectBuilder {
     #[inline]
     fn unwrap_internal(self) -> Json {
         if self.null {
-            json::Null
+            Json::Null
         } else {
-            json::Object(self.object)    
+            Json::Object(self.object)    
         }
     }
 }
@@ -119,7 +118,7 @@ impl<N> ObjectBuilder where N: ToString {
 impl ToJson for ObjectBuilder {
     /// Copy self to new JSON instance.
     fn to_json(&self) -> Json {
-        if self.null { json::Null } else { self.object.to_json() }
+        if self.null { Json::Null } else { self.object.to_json() }
     }
 }
 
