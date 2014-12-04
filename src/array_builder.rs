@@ -1,11 +1,10 @@
-use serialize::json;
-use serialize::json::{JsonArray, Json, ToJson};
+use serialize::json::{Array, Json, ToJson};
 use std::collections::TreeMap;
 
 use object_builder::ObjectBuilder;
 
 pub struct ArrayBuilder {
-    array: JsonArray,
+    array: Array,
     pub null: bool,
     pub skip: bool,
     pub root: Option<String>
@@ -26,7 +25,7 @@ impl ArrayBuilder {
     /// Initialize builder with initial value.
     pub fn from_json(array: Json) -> Option<ArrayBuilder> {
         match array {
-            json::Array(array) => Some(ArrayBuilder { 
+            Json::Array(array) => Some(ArrayBuilder { 
                 array: array, 
                 null: false,
                 skip: false,
@@ -86,7 +85,7 @@ impl ArrayBuilder {
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
-            json::Object(obj)
+            Json::Object(obj)
         } else {
             self.unwrap_internal()
         }
@@ -96,9 +95,9 @@ impl ArrayBuilder {
     #[inline]
     fn unwrap_internal(self) -> Json {
         if self.null {
-            json::Null
+            Json::Null
         } else {
-            json::Array(self.array)
+            Json::Array(self.array)
         }
     }
 }
@@ -144,6 +143,6 @@ impl<A, T: Iterator<A>> ArrayBuilder {
 impl ToJson for ArrayBuilder {
     /// Copy self to new JSON instance.
     fn to_json(&self) -> Json {
-         if self.null { json::Null } else { self.array.to_json() }
+         if self.null { Json::Null } else { self.array.to_json() }
     }
 }
