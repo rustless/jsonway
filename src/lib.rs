@@ -2,7 +2,7 @@
 #![crate_type = "rlib"]
 #![deny(warnings)]
 #![deny(bad_style)]
-#![feature(macro_rules, phase, tuple_indexing)]
+#![feature(macro_rules, phase)]
 
 extern crate serialize;
 extern crate collections;
@@ -19,6 +19,7 @@ pub mod mutable_json;
 pub mod serializer;
 pub mod array_serializer;
 
+#[allow(missing_copy_implementations)]
 pub struct JsonWay;
 
 /// ```rust
