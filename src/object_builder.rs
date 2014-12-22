@@ -1,4 +1,4 @@
-use std::collections::TreeMap;
+use std::collections::BTreeMap;
 use collections::string::ToString;
 use serialize::json::{Json, Object, ToJson};
 
@@ -15,7 +15,7 @@ pub struct ObjectBuilder {
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
         ObjectBuilder { 
-            object: TreeMap::new(), 
+            object: BTreeMap::new(), 
             null: false,
             skip: false,
             root: None
@@ -65,7 +65,7 @@ impl ObjectBuilder {
     /// Move out internal JSON value.
     pub fn unwrap(self) -> Json {
         if self.root.is_some() {
-            let mut obj = TreeMap::new();
+            let mut obj = BTreeMap::new();
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);

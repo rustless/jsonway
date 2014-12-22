@@ -33,7 +33,7 @@ use object_builder::ObjectBuilder;
 ///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Saes Rrogon"
-/// )
+/// );
 /// ```
 pub trait Serializer {
 
@@ -85,7 +85,7 @@ pub trait Serializer {
 ///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Saes Rrogon"
-/// )
+/// );
 /// ```
 pub trait ObjectSerializer<T> {
 
@@ -151,7 +151,7 @@ pub trait ObjectSerializer<T> {
 ///         "name",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Palpatine"
-/// )
+/// );
 ///
 /// assert_eq!(
 ///     json.find_path(&[
@@ -159,7 +159,7 @@ pub trait ObjectSerializer<T> {
 ///         "secret",
 ///     ]).unwrap().as_string().unwrap(), 
 ///     "Dark side"
-/// )
+/// );
 ///
 /// ```
 pub trait ObjectScopeSerializer<T, S> {
