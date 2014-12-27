@@ -4,7 +4,7 @@
 #![deny(bad_style)]
 #![feature(macro_rules, phase)]
 
-extern crate serialize;
+extern crate "rustc-serialize" as serialize;
 extern crate collections;
 
 pub use mutable_json::MutableJson;

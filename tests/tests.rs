@@ -1,5 +1,5 @@
 
-extern crate serialize;
+extern crate "rustc-serialize" as serialize;
 extern crate jsonway;
 
 use jsonway::{JsonWay};

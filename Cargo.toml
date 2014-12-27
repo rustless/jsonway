@@ -1,11 +1,14 @@
 [package]
 
 name = "jsonway"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
 description = "JSON building DSL and configurable serializers for Rust"
 keywords = ["json", "serializers"]
 license = "MIT"
+
+[dependencies]
+rustc-serialize = "*"
 
 [[test]]
 name = "tests"
