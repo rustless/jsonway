@@ -4,7 +4,7 @@ extern crate jsonway;
 
 use jsonway::{JsonWay};
 
-#[deriving(Show)]
+#[derive(Show)]
 enum Side {
     Light,
     Dark
