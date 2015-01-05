@@ -109,7 +109,8 @@ impl<T: ToJson> ArrayBuilder {
     }
 }
 
-impl<A, T: Iterator<A>> ArrayBuilder {
+impl<A, T: Iterator<Item=A>> ArrayBuilder {
+
     /// Fill this array by objects builded from iterator.
     pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
         for a in *iter {
