@@ -36,7 +36,7 @@ impl ArrayBuilder {
     }
 
     /// Create new ArrayBuilder, pass it to closure as mutable ref and return.
-    pub fn build(builder: |&mut ArrayBuilder|) -> ArrayBuilder {
+    pub fn build<F>(builder: F) -> ArrayBuilder where F: Fn(&mut ArrayBuilder) {
         let mut bldr = ArrayBuilder::new();
         builder(&mut bldr);  
         
@@ -49,12 +49,12 @@ impl ArrayBuilder {
     }
 
     /// Create new array and push it.
-    pub fn array(&mut self, builder: |&mut ArrayBuilder|) {
+    pub fn array<F>(&mut self, builder: F) where F: Fn(&mut ArrayBuilder) {
         self.push(ArrayBuilder::build(builder).unwrap());
     }
 
     /// Create new object and push it
-    pub fn object(&mut self, builder: |&mut ObjectBuilder|) {
+    pub fn object<F>(&mut self, builder: F) where F: Fn(&mut ObjectBuilder) {
         self.push(ObjectBuilder::build(builder).unwrap());
     }
 
@@ -112,7 +112,7 @@ impl<T: ToJson> ArrayBuilder {
 impl<A, T: Iterator<Item=A>> ArrayBuilder {
 
     /// Fill this array by objects builded from iterator.
-    pub fn objects(&mut self, iter: &mut T, func: |A, &mut ObjectBuilder|) {
+    pub fn objects<F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ObjectBuilder) {
         for a in *iter {
             let mut bldr = ObjectBuilder::new();
             func(a, &mut bldr);
@@ -123,7 +123,7 @@ impl<A, T: Iterator<Item=A>> ArrayBuilder {
     }
 
     // Fill this array by arrays builded from iterator.
-    pub fn arrays(&mut self, iter: &mut T, func: |A, &mut ArrayBuilder|) {
+    pub fn arrays<F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ArrayBuilder) {
         for a in *iter {
             let mut bldr = ArrayBuilder::new();
             func(a, &mut bldr);
@@ -134,7 +134,7 @@ impl<A, T: Iterator<Item=A>> ArrayBuilder {
     }
 
     /// Fill this array by JSON values builded from iterator.
-    pub fn map(&mut self, iter: &mut T, func: |A| -> Json) {
+    pub fn map<F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> Json {
         for a in *iter {
             self.push(func(a))      
         }

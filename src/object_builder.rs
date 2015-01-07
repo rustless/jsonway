@@ -36,7 +36,7 @@ impl ObjectBuilder {
     }
 
     /// Create new builder, pass it to closure as mutable ref and return.
-    pub fn build(builder: |&mut ObjectBuilder|) -> ObjectBuilder {
+    pub fn build<F>(builder: F) -> ObjectBuilder where F: Fn(&mut ObjectBuilder) {
         let mut bldr = ObjectBuilder::new();
         builder(&mut bldr);  
         
@@ -105,12 +105,12 @@ impl<N> ObjectBuilder where N: ToString {
     }
 
     /// Build new array and set object's `name` field with it.
-    pub fn array(&mut self, name: N, builder: |&mut ArrayBuilder|) {
+    pub fn array<F>(&mut self, name: N, builder: F) where F: Fn(&mut ArrayBuilder) {
         self.set(name, ArrayBuilder::build(builder).unwrap());
     }
 
     /// Build new object and set object's `name` field with it.
-    pub fn object(&mut self, name: N, builder: |&mut ObjectBuilder|) {
+    pub fn object<F>(&mut self, name: N, builder: F) where F: Fn(&mut ObjectBuilder) {
         self.set(name, ObjectBuilder::build(builder).unwrap());
     }
 }
