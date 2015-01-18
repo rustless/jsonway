@@ -11,6 +11,7 @@ pub struct ArrayBuilder {
 }
 
 /// Use ArrayBuilder to produce JSON arrays
+#[allow(unstable)]
 impl ArrayBuilder {
 
     pub fn new() -> ArrayBuilder {
@@ -102,17 +103,17 @@ impl ArrayBuilder {
     }
 }
 
-impl<T: ToJson> ArrayBuilder {
+impl ArrayBuilder {
     /// Push to array something that can be converted to JSON.
-    pub fn push(&mut self, value: T) {
+    pub fn push<T: ToJson>(&mut self, value: T) {
         self.push_json(value.to_json());
     }
 }
 
-impl<A, T: Iterator<Item=A>> ArrayBuilder {
+impl ArrayBuilder {
 
     /// Fill this array by objects builded from iterator.
-    pub fn objects<F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ObjectBuilder) {
+    pub fn objects<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ObjectBuilder) {
         for a in *iter {
             let mut bldr = ObjectBuilder::new();
             func(a, &mut bldr);
@@ -123,7 +124,7 @@ impl<A, T: Iterator<Item=A>> ArrayBuilder {
     }
 
     // Fill this array by arrays builded from iterator.
-    pub fn arrays<F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ArrayBuilder) {
+    pub fn arrays<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ArrayBuilder) {
         for a in *iter {
             let mut bldr = ArrayBuilder::new();
             func(a, &mut bldr);
@@ -134,7 +135,7 @@ impl<A, T: Iterator<Item=A>> ArrayBuilder {
     }
 
     /// Fill this array by JSON values builded from iterator.
-    pub fn map<F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> Json {
+    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> Json {
         for a in *iter {
             self.push(func(a))      
         }

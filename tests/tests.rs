@@ -9,12 +9,22 @@ enum Side {
     Light,
     Dark
 }
+#[allow(unstable)]
+impl Side {
+    fn to_string(&self) -> String {
+        match *self {
+            Side::Light => "Light".to_string(),
+            Side::Dark  => "Dark".to_string()
+        }
+    }
+}
 
 struct Jedi {
     name: String,
     side: Side
 }
 
+#[allow(unstable)]
 fn jedi_array() -> Vec<Jedi> {
     vec![
         Jedi { name: "Saes Rrogon".to_string(), side: Side::Dark },
@@ -24,6 +34,7 @@ fn jedi_array() -> Vec<Jedi> {
 }
 
 #[test]
+#[allow(unstable)]
 fn simple_array_of_objects() {
     let jedi_array = jedi_array();
 
@@ -45,6 +56,7 @@ fn simple_array_of_objects() {
 }
 
 #[test]
+#[allow(unstable)]
 fn simple_array_of_arrays() {
     let jedi_array = jedi_array();
 

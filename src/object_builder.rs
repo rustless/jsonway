@@ -12,6 +12,7 @@ pub struct ObjectBuilder {
 }
 
 /// ObjectBuilder is used to produce JSON objects
+#[allow(unstable)]
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
         ObjectBuilder { 
@@ -85,32 +86,33 @@ impl ObjectBuilder {
     }
 }
 
-impl<V, N> ObjectBuilder where V: ToJson, N: ToString {
+impl ObjectBuilder {
     /// Set object's `name` field with something that can be
     /// converted to Json value.
-    pub fn set(&mut self, name: N, value: V) {
+    pub fn set<V: ToJson, N: ToString>(&mut self, name: N, value: V) {
         self.set_json(name, value.to_json());
     }
 
     /// Stub for future use
-    pub fn call(&mut self, name: N, value: V) {
+    pub fn call<V: ToJson, N: ToString>(&mut self, name: N, value: V) {
         self.set(name, value);
     }
 }
 
-impl<N> ObjectBuilder where N: ToString {
+#[allow(unstable)]
+impl ObjectBuilder {
     /// Set object's `name` field with raw Json value.
-    pub fn set_json(&mut self, name: N, value: Json) {
+    pub fn set_json<N: ToString>(&mut self, name: N, value: Json) {
         self.object.insert(name.to_string(), value);
     }
 
     /// Build new array and set object's `name` field with it.
-    pub fn array<F>(&mut self, name: N, builder: F) where F: Fn(&mut ArrayBuilder) {
+    pub fn array<N: ToString, F>(&mut self, name: N, builder: F) where F: Fn(&mut ArrayBuilder) {
         self.set(name, ArrayBuilder::build(builder).unwrap());
     }
 
     /// Build new object and set object's `name` field with it.
-    pub fn object<F>(&mut self, name: N, builder: F) where F: Fn(&mut ObjectBuilder) {
+    pub fn object<N: ToString, F>(&mut self, name: N, builder: F) where F: Fn(&mut ObjectBuilder) {
         self.set(name, ObjectBuilder::build(builder).unwrap());
     }
 }
