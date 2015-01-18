@@ -12,7 +12,6 @@ pub struct ObjectBuilder {
 }
 
 /// ObjectBuilder is used to produce JSON objects
-#[allow(unstable)]
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
         ObjectBuilder { 
@@ -99,7 +98,6 @@ impl ObjectBuilder {
     }
 }
 
-#[allow(unstable)]
 impl ObjectBuilder {
     /// Set object's `name` field with raw Json value.
     pub fn set_json<N: ToString>(&mut self, name: N, value: Json) {

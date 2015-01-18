@@ -1,10 +1,10 @@
 #![crate_name = "jsonway"]
 #![crate_type = "rlib"]
+#![allow(unstable)]
 #![deny(warnings)]
 #![deny(bad_style)]
 
 extern crate "rustc-serialize" as serialize;
-#[allow(unstable)]
 extern crate collections;
 
 // pub use mutable_json::MutableJson;
@@ -15,7 +15,7 @@ pub use array_serializer::ArraySerializer;
 
 pub mod array_builder;
 pub mod object_builder;
-// pub mod mutable_json;
+pub mod mutable_json;
 pub mod serializer;
 pub mod array_serializer;
 

@@ -11,7 +11,6 @@ pub struct ArrayBuilder {
 }
 
 /// Use ArrayBuilder to produce JSON arrays
-#[allow(unstable)]
 impl ArrayBuilder {
 
     pub fn new() -> ArrayBuilder {
