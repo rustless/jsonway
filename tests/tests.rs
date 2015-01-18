@@ -1,3 +1,4 @@
+#![allow(unstable)]
 
 extern crate "rustc-serialize" as serialize;
 extern crate jsonway;
@@ -32,7 +33,7 @@ fn simple_array_of_objects() {
             match jedi.side {
                 Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
-                    json.set("side".to_string(), jedi.side.to_string());
+                    json.set("side".to_string(), format!("{:?}", jedi.side));
                 },
                 Side::Dark => json.skip()
             }
@@ -53,7 +54,7 @@ fn simple_array_of_arrays() {
             match jedi.side {
                 Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
-                    json.set("side".to_string(), jedi.side.to_string());
+                    json.set("side".to_string(), format!("{:?}", jedi.side));
                 },
                 Side::Dark => json.skip()
             }

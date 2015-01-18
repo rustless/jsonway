@@ -1,13 +1,13 @@
 #![crate_name = "jsonway"]
 #![crate_type = "rlib"]
+#![allow(unstable)]
 #![deny(warnings)]
 #![deny(bad_style)]
-#![feature(macro_rules, phase)]
 
 extern crate "rustc-serialize" as serialize;
 extern crate collections;
 
-pub use mutable_json::MutableJson;
+// pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
 pub use array_builder::ArrayBuilder;
 pub use serializer::{Serializer, ObjectSerializer, ObjectScopeSerializer};
