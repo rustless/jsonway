@@ -36,7 +36,7 @@ impl ArrayBuilder {
     }
 
     /// Create new ArrayBuilder, pass it to closure as mutable ref and return.
-    pub fn build<F>(builder: F) -> ArrayBuilder where F: Fn(&mut ArrayBuilder) {
+    pub fn build<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
         let mut bldr = ArrayBuilder::new();
         builder(&mut bldr);  
         
@@ -49,12 +49,12 @@ impl ArrayBuilder {
     }
 
     /// Create new array and push it.
-    pub fn array<F>(&mut self, builder: F) where F: Fn(&mut ArrayBuilder) {
+    pub fn array<F>(&mut self, builder: F) where F: FnOnce(&mut ArrayBuilder) {
         self.push(ArrayBuilder::build(builder).unwrap());
     }
 
     /// Create new object and push it
-    pub fn object<F>(&mut self, builder: F) where F: Fn(&mut object_builder::ObjectBuilder) {
+    pub fn object<F>(&mut self, builder: F) where F: FnOnce(&mut object_builder::ObjectBuilder) {
         self.push(object_builder::ObjectBuilder::build(builder).unwrap());
     }
 
