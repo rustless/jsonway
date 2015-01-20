@@ -1,11 +1,11 @@
-use serialize::json::Json;
+use serialize::json;
 
-use object_builder::ObjectBuilder;
-use array_builder::ArrayBuilder;
+use object_builder;
+use array_builder;
 
 pub trait ArraySerializer {
 
-    fn build(&self, &mut ArrayBuilder);
+    fn build(&self, &mut array_builder::ArrayBuilder);
     
     #[inline]
     fn root(&self) -> Option<&str> {
@@ -13,12 +13,12 @@ pub trait ArraySerializer {
     }
 
     #[inline]
-    fn meta(&self) -> Option<ObjectBuilder> {
+    fn meta(&self) -> Option<object_builder::ObjectBuilder> {
         None
     }
 
-    fn serialize(&mut self) -> Json {
-        let mut bldr = ArrayBuilder::new();
+    fn serialize(&mut self) -> json::Json {
+        let mut bldr = array_builder::ArrayBuilder::new();
 
         let root = self.root();
         if root.is_some() {
@@ -30,9 +30,9 @@ pub trait ArraySerializer {
         match self.meta() {
             Some(meta) => {
                 let mut meta_bldr = if bldr.has_root() {
-                    ObjectBuilder::from_json(bldr.unwrap()).unwrap()
+                    object_builder::ObjectBuilder::from_json(bldr.unwrap()).unwrap()
                 } else {
-                    let mut meta_bldr = ObjectBuilder::new();
+                    let mut meta_bldr = object_builder::ObjectBuilder::new();
                     meta_bldr.set("data", bldr.unwrap());
                     meta_bldr
                 };

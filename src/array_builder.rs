@@ -1,10 +1,10 @@
-use serialize::json::{Array, Json, ToJson};
-use std::collections::BTreeMap;
+use serialize::json;
+use std::collections;
 
-use object_builder::ObjectBuilder;
+use object_builder;
 
 pub struct ArrayBuilder {
-    array: Array,
+    pub array: json::Array,
     pub null: bool,
     pub skip: bool,
     pub root: Option<String>
@@ -23,9 +23,9 @@ impl ArrayBuilder {
     }
 
     /// Initialize builder with initial value.
-    pub fn from_json(array: Json) -> Option<ArrayBuilder> {
+    pub fn from_json(array: json::Json) -> Option<ArrayBuilder> {
         match array {
-            Json::Array(array) => Some(ArrayBuilder { 
+            json::Json::Array(array) => Some(ArrayBuilder { 
                 array: array, 
                 null: false,
                 skip: false,
@@ -44,7 +44,7 @@ impl ArrayBuilder {
     }
 
     /// Push JSON value to array.
-    pub fn push_json(&mut self, value: Json) {
+    pub fn push_json(&mut self, value: json::Json) {
         self.array.push(value);
     }
 
@@ -54,8 +54,8 @@ impl ArrayBuilder {
     }
 
     /// Create new object and push it
-    pub fn object<F>(&mut self, builder: F) where F: Fn(&mut ObjectBuilder) {
-        self.push(ObjectBuilder::build(builder).unwrap());
+    pub fn object<F>(&mut self, builder: F) where F: Fn(&mut object_builder::ObjectBuilder) {
+        self.push(object_builder::ObjectBuilder::build(builder).unwrap());
     }
 
     /// It you call `null`, this array will be converted to null when converting
@@ -69,7 +69,7 @@ impl ArrayBuilder {
         self.skip = true;
     }
 
-    // Set custom root for result Json object
+    // Set custom root for result json::Json object
     pub fn root(&mut self, root: &str) {
         self.root = Some(root.to_string());
     }
@@ -79,13 +79,13 @@ impl ArrayBuilder {
     }
 
     /// Move out internal JSON value.
-    pub fn unwrap(self) -> Json {
+    pub fn unwrap(self) -> json::Json {
         if self.root.is_some() {
-            let mut obj = BTreeMap::new();
+            let mut obj = collections::BTreeMap::new();
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
-            Json::Object(obj)
+            json::Json::Object(obj)
         } else {
             self.unwrap_internal()
         }
@@ -93,18 +93,18 @@ impl ArrayBuilder {
 
     /// Move out internal JSON value.
     #[inline]
-    fn unwrap_internal(self) -> Json {
+    fn unwrap_internal(self) -> json::Json {
         if self.null {
-            Json::Null
+            json::Json::Null
         } else {
-            Json::Array(self.array)
+            json::Json::Array(self.array)
         }
     }
 }
 
 impl ArrayBuilder {
     /// Push to array something that can be converted to JSON.
-    pub fn push<T: ToJson>(&mut self, value: T) {
+    pub fn push<T: json::ToJson>(&mut self, value: T) {
         self.push_json(value.to_json());
     }
 }
@@ -112,9 +112,9 @@ impl ArrayBuilder {
 impl ArrayBuilder {
 
     /// Fill this array by objects builded from iterator.
-    pub fn objects<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ObjectBuilder) {
+    pub fn objects<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut object_builder::ObjectBuilder) {
         for a in *iter {
-            let mut bldr = ObjectBuilder::new();
+            let mut bldr = object_builder::ObjectBuilder::new();
             func(a, &mut bldr);
             if !bldr.skip {
                 self.push(bldr.unwrap())
@@ -134,16 +134,16 @@ impl ArrayBuilder {
     }
 
     /// Fill this array by JSON values builded from iterator.
-    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> Json {
+    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> json::Json {
         for a in *iter {
             self.push(func(a))      
         }
     }
 }
 
-impl ToJson for ArrayBuilder {
+impl json::ToJson for ArrayBuilder {
     /// Copy self to new JSON instance.
-    fn to_json(&self) -> Json {
-         if self.null { Json::Null } else { self.array.to_json() }
+    fn to_json(&self) -> json::Json {
+         if self.null { json::Json::Null } else { self.array.to_json() }
     }
 }

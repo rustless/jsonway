@@ -1,13 +1,13 @@
-use serialize::json::Json;
+use serialize::json;
 
-use object_builder::ObjectBuilder;
+use object_builder;
 
 /// Provides functionality to create custom JSON presenters for your structs.
 /// 
 /// ## Example 
 /// 
 /// ```
-/// use jsonway::{ObjectBuilder, Serializer};
+/// use jsonway::{self, Serializer};
 ///
 /// struct Jedi {
 ///     name: String
@@ -17,9 +17,9 @@ use object_builder::ObjectBuilder;
 ///     jedi: &'a Jedi
 /// }
 ///
-/// impl<'a> Serializer for JediSerializer<'a> {
+/// impl<'a> jsonway::Serializer for JediSerializer<'a> {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
-///     fn build(&self, json: &mut ObjectBuilder) {
+///     fn build(&self, json: &mut jsonway::ObjectBuilder) {
 ///         json.set("name", self.jedi.name.to_string());
 ///     }
 /// }
@@ -37,15 +37,15 @@ use object_builder::ObjectBuilder;
 /// ```
 pub trait Serializer {
 
-    fn build(&self, &mut ObjectBuilder);
+    fn build(&self, &mut object_builder::ObjectBuilder);
     
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self) -> Json {
-        let mut bldr = ObjectBuilder::new();
+    fn serialize(&mut self) -> json::Json {
+        let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if root.is_some() {
             bldr.root(root.unwrap())
@@ -61,7 +61,7 @@ pub trait Serializer {
 /// ## Example 
 /// 
 /// ```
-/// use jsonway::{ObjectBuilder, ObjectSerializer};
+/// use jsonway::{self, ObjectSerializer};
 ///
 /// struct Jedi {
 ///     name: String
@@ -69,9 +69,9 @@ pub trait Serializer {
 ///
 /// struct JediSerializer;
 ///
-/// impl ObjectSerializer<Jedi> for JediSerializer {
+/// impl jsonway::ObjectSerializer<Jedi> for JediSerializer {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
-///     fn build(&self, jedi: &Jedi, json: &mut ObjectBuilder) {
+///     fn build(&self, jedi: &Jedi, json: &mut jsonway::ObjectBuilder) {
 ///         json.set("name", jedi.name.to_string());
 ///     }
 /// }
@@ -89,15 +89,15 @@ pub trait Serializer {
 /// ```
 pub trait ObjectSerializer<T> {
 
-    fn build(&self, &T, &mut ObjectBuilder);
+    fn build(&self, &T, &mut object_builder::ObjectBuilder);
     
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self, obj: &T) -> Json {
-        let mut bldr = ObjectBuilder::new();
+    fn serialize(&mut self, obj: &T) -> json::Json {
+        let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if root.is_some() {
             bldr.root(root.unwrap())
@@ -112,10 +112,10 @@ pub trait ObjectSerializer<T> {
 /// ## Example 
 /// 
 /// ```rust
-/// use jsonway::{ObjectBuilder, ObjectScopeSerializer};
+/// use jsonway::{self, ObjectScopeSerializer};
 /// 
 /// struct User {
-///     id: uint,
+///     id: u64,
 ///     is_admin: bool
 /// }
 /// 
@@ -126,9 +126,9 @@ pub trait ObjectSerializer<T> {
 /// 
 /// struct JediSerializer;
 /// 
-/// impl ObjectScopeSerializer<Jedi, User> for JediSerializer {
+/// impl jsonway::ObjectScopeSerializer<Jedi, User> for JediSerializer {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
-///     fn build(&self, jedi: &Jedi, current_user: &User, json: &mut ObjectBuilder) {
+///     fn build(&self, jedi: &Jedi, current_user: &User, json: &mut jsonway::ObjectBuilder) {
 ///         json.set("name", jedi.name.to_string());
 /// 
 ///         if current_user.is_admin {
@@ -164,15 +164,15 @@ pub trait ObjectSerializer<T> {
 /// ```
 pub trait ObjectScopeSerializer<T, S> {
 
-    fn build(&self, &T, &S, &mut ObjectBuilder);
+    fn build(&self, &T, &S, &mut object_builder::ObjectBuilder);
     
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, scope: &S) -> Json {
-        let mut bldr = ObjectBuilder::new();
+    fn serialize(&mut self, obj: &T, scope: &S) -> json::Json {
+        let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if root.is_some() {
             bldr.root(root.unwrap())
