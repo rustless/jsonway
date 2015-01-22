@@ -51,12 +51,12 @@ pub struct JsonWay;
 /// ```
 impl JsonWay {
     /// Create and return new ListBuilder
-    pub fn array<F>(builder: F) -> ArrayBuilder where F: Fn(&mut ArrayBuilder) {
+    pub fn array<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
         ArrayBuilder::build(builder)
     }    
 
     /// Create and return new ObjectBuilder
-    pub fn object<F>(builder: F) -> ObjectBuilder where F: Fn(&mut ObjectBuilder) {
+    pub fn object<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {
         ObjectBuilder::build(builder)
     }
 }
