@@ -19,13 +19,8 @@ pub mod mutable_json;
 pub mod serializer;
 pub mod array_serializer;
 
-#[allow(missing_copy_implementations)]
-pub struct JsonWay;
-
 /// ```rust
-/// use jsonway::JsonWay;
-///
-/// let json = JsonWay::object(|json| {
+/// let json = jsonway::object(|json| {
 ///     json.set("first_name", "Luke".to_string()); 
 ///     json.set("last_name", "Skywalker".to_string());
 ///
@@ -49,14 +44,13 @@ pub struct JsonWay;
 /// assert!(json.find("info").unwrap().is_object());
 /// assert!(json.find("masters").unwrap().is_array());
 /// ```
-impl JsonWay {
-    /// Create and return new ListBuilder
-    pub fn array<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
-        ArrayBuilder::build(builder)
-    }    
 
-    /// Create and return new ObjectBuilder
-    pub fn object<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {
-        ObjectBuilder::build(builder)
-    }
+/// Create and return new ListBuilder
+pub fn array<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
+    ArrayBuilder::build(builder)
+}    
+
+/// Create and return new ObjectBuilder
+pub fn object<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {
+    ObjectBuilder::build(builder)
 }

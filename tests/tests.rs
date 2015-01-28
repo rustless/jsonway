@@ -3,8 +3,6 @@
 extern crate "rustc-serialize" as serialize;
 extern crate jsonway;
 
-use jsonway::{JsonWay};
-
 #[derive(Show)]
 enum Side {
     Light,
@@ -28,7 +26,7 @@ fn jedi_array() -> Vec<Jedi> {
 fn simple_array_of_objects() {
     let jedi_array = jedi_array();
 
-    let json = JsonWay::array(|json| {
+    let json = jsonway::array(|json| {
         json.objects(&mut jedi_array.iter(), |jedi, json| {
             match jedi.side {
                 Side::Light => {
@@ -49,7 +47,7 @@ fn simple_array_of_objects() {
 fn simple_array_of_arrays() {
     let jedi_array = jedi_array();
 
-    let json = JsonWay::array(|json| {
+    let json = jsonway::array(|json| {
         json.objects(&mut jedi_array.iter(), |jedi, json| {
             match jedi.side {
                 Side::Light => {
