@@ -1,9 +1,8 @@
 #![crate_name = "jsonway"]
 #![crate_type = "rlib"]
-#![allow(unstable)]
 #![deny(warnings)]
 #![deny(bad_style)]
-
+#![feature(collections)]
 extern crate "rustc-serialize" as serialize;
 extern crate collections;
 

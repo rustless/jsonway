@@ -1,9 +1,10 @@
-#![allow(unstable)]
+#![feature(collections)]
+#![feature(core)]
 
 extern crate "rustc-serialize" as serialize;
 extern crate jsonway;
 
-#[derive(Show)]
+#[derive(Debug)]
 enum Side {
     Light,
     Dark
