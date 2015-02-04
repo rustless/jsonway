@@ -112,8 +112,8 @@ impl ArrayBuilder {
 impl ArrayBuilder {
 
     /// Fill this array by objects builded from iterator.
-    pub fn objects<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut object_builder::ObjectBuilder) {
-        for a in *iter {
+    pub fn objects<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A, &mut object_builder::ObjectBuilder) {
+        for a in iter {
             let mut bldr = object_builder::ObjectBuilder::new();
             func(a, &mut bldr);
             if !bldr.skip {
@@ -123,8 +123,8 @@ impl ArrayBuilder {
     }
 
     // Fill this array by arrays builded from iterator.
-    pub fn arrays<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A, &mut ArrayBuilder) {
-        for a in *iter {
+    pub fn arrays<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A, &mut ArrayBuilder) {
+        for a in iter {
             let mut bldr = ArrayBuilder::new();
             func(a, &mut bldr);
             if !bldr.skip {
@@ -134,8 +134,8 @@ impl ArrayBuilder {
     }
 
     /// Fill this array by JSON values builded from iterator.
-    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: &mut T, func: F) where F: Fn(A) -> json::Json {
-        for a in *iter {
+    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A) -> json::Json {
+        for a in iter {
             self.push(func(a))      
         }
     }

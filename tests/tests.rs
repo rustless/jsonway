@@ -1,6 +1,3 @@
-#![feature(collections)]
-#![feature(core)]
-
 extern crate "rustc-serialize" as serialize;
 extern crate jsonway;
 
@@ -28,7 +25,7 @@ fn simple_array_of_objects() {
     let jedi_array = jedi_array();
 
     let json = jsonway::array(|json| {
-        json.objects(&mut jedi_array.iter(), |jedi, json| {
+        json.objects(jedi_array.iter(), |jedi, json| {
             match jedi.side {
                 Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
@@ -49,7 +46,7 @@ fn simple_array_of_arrays() {
     let jedi_array = jedi_array();
 
     let json = jsonway::array(|json| {
-        json.objects(&mut jedi_array.iter(), |jedi, json| {
+        json.objects(jedi_array.iter(), |jedi, json| {
             match jedi.side {
                 Side::Light => {
                     json.set("name".to_string(), jedi.name.to_string());
