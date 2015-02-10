@@ -25,7 +25,7 @@ use object_builder;
 /// }
 ///
 /// let jedi = Jedi { name: "Saes Rrogon".to_string() };
-/// let json = JediSerializer{jedi: &jedi}.serialize();
+/// let json = JediSerializer{jedi: &jedi}.serialize(true);
 ///
 /// assert_eq!(
 ///     json.find_path(&[
@@ -44,10 +44,10 @@ pub trait Serializer {
         None
     }
 
-    fn serialize(&mut self) -> json::Json {
+    fn serialize(&mut self, include_root: bool) -> json::Json {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
-        if root.is_some() {
+        if include_root && root.is_some() {
             bldr.root(root.unwrap())
         }
         self.build(&mut bldr);
@@ -77,7 +77,7 @@ pub trait Serializer {
 /// }
 ///
 /// let jedi = Jedi { name: "Saes Rrogon".to_string() };
-/// let json = JediSerializer.serialize(&jedi);
+/// let json = JediSerializer.serialize(&jedi, true);
 ///
 /// assert_eq!(
 ///     json.find_path(&[
@@ -96,10 +96,10 @@ pub trait ObjectSerializer<T> {
         None
     }
 
-    fn serialize(&mut self, obj: &T) -> json::Json {
+    fn serialize(&mut self, obj: &T, include_root: bool) -> json::Json {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
-        if root.is_some() {
+        if include_root && root.is_some() {
             bldr.root(root.unwrap())
         }
         self.build(obj, &mut bldr);
@@ -143,7 +143,7 @@ pub trait ObjectSerializer<T> {
 /// };
 ///
 /// let current_user = User { id: 1, is_admin: true };
-/// let json = JediSerializer.serialize(&jedi, &current_user);
+/// let json = JediSerializer.serialize(&jedi, &current_user, true);
 ///
 /// assert_eq!(
 ///     json.find_path(&[
@@ -171,10 +171,10 @@ pub trait ObjectScopeSerializer<T, S> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, scope: &S) -> json::Json {
+    fn serialize(&mut self, obj: &T, scope: &S, include_root: bool) -> json::Json {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
-        if root.is_some() {
+        if include_root && root.is_some() {
             bldr.root(root.unwrap())
         }
         self.build(obj, scope, &mut bldr);

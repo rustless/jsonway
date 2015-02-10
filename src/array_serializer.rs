@@ -17,11 +17,11 @@ pub trait ArraySerializer {
         None
     }
 
-    fn serialize(&mut self) -> json::Json {
+    fn serialize(&mut self, include_root: bool) -> json::Json {
         let mut bldr = array_builder::ArrayBuilder::new();
 
         let root = self.root();
-        if root.is_some() {
+        if include_root && root.is_some() {
             bldr.root(root.unwrap())
         }
 
