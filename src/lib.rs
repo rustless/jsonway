@@ -3,7 +3,6 @@
 #![deny(warnings)]
 #![deny(bad_style)]
 #![feature(collections)]
-#![feature(core)]
 extern crate "rustc-serialize" as serialize;
 extern crate collections;
 
