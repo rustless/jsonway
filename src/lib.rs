@@ -1,9 +1,7 @@
 #![crate_type = "rlib"]
 #![deny(warnings)]
 #![deny(bad_style)]
-#![feature(collections)]
 extern crate rustc_serialize as serialize;
-extern crate collections;
 
 pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
