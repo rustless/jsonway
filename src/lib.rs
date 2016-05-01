@@ -1,7 +1,9 @@
 #![crate_type = "rlib"]
 #![deny(warnings)]
 #![deny(bad_style)]
-extern crate rustc_serialize as serialize;
+
+extern crate serde;
+extern crate serde_json;
 
 pub use object_builder::ObjectBuilder;
 pub use array_builder::ArrayBuilder;
@@ -15,20 +17,20 @@ pub mod array_serializer;
 
 /// ```rust
 /// let json = jsonway::object(|json| {
-///     json.set("first_name", "Luke".to_string());
-///     json.set("last_name", "Skywalker".to_string());
+///     json.set("first_name", "Luke");
+///     json.set("last_name", "Skywalker");
 ///
 ///     json.object("info", |json| {
-///         json.set("homeworld", "Tatooine".to_string());
-///         json.set("born", "19 BBY".to_string());
-///         json.set("died", "Between 45 ABY and 137 ABY".to_string());
+///         json.set("homeworld", "Tatooine");
+///         json.set("born", "19 BBY");
+///         json.set("died", "Between 45 ABY and 137 ABY");
 ///     });
 ///
 ///     json.array("masters", |json| {
-///         json.push("Obi-Wan Kenobi".to_string());
-///         json.push("Yoda".to_string());
-///         json.push("Joruus C'baoth (Briefly)".to_string());
-///         json.push("Darth Sidious (Briefly)".to_string());
+///         json.push("Obi-Wan Kenobi");
+///         json.push("Yoda");
+///         json.push("Joruus C'baoth (Briefly)");
+///         json.push("Darth Sidious (Briefly)");
 ///     });
 /// }).unwrap();
 ///

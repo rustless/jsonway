@@ -8,7 +8,8 @@ keywords = ["json", "serializers"]
 license = "MIT"
 
 [dependencies]
-rustc-serialize = "0.3"
+serde = "0.7"
+serde_json = "0.7"
 
 [[test]]
 name = "tests"

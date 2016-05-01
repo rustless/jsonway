@@ -1,5 +1,4 @@
-use serialize::json;
-
+use serde_json::{Value};
 use object_builder;
 
 /// Provides functionality to create custom JSON presenters for your structs.
@@ -20,7 +19,7 @@ use object_builder;
 /// impl<'a> jsonway::Serializer for JediSerializer<'a> {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
 ///     fn build(&self, json: &mut jsonway::ObjectBuilder) {
-///         json.set("name", self.jedi.name.to_string());
+///         json.set("name", &self.jedi.name);
 ///     }
 /// }
 ///
@@ -44,7 +43,7 @@ pub trait Serializer {
         None
     }
 
-    fn serialize(&mut self, include_root: bool) -> json::Json {
+    fn serialize(&mut self, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {
@@ -72,7 +71,7 @@ pub trait Serializer {
 /// impl jsonway::ObjectSerializer<Jedi> for JediSerializer {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
 ///     fn build(&self, jedi: &Jedi, json: &mut jsonway::ObjectBuilder) {
-///         json.set("name", jedi.name.to_string());
+///         json.set("name", &jedi.name);
 ///     }
 /// }
 ///
@@ -96,7 +95,7 @@ pub trait ObjectSerializer<T> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, include_root: bool) -> json::Json {
+    fn serialize(&mut self, obj: &T, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {
@@ -171,7 +170,7 @@ pub trait ObjectScopeSerializer<T, S> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, scope: &S, include_root: bool) -> json::Json {
+    fn serialize(&mut self, obj: &T, scope: &S, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {

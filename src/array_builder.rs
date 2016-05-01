@@ -1,10 +1,13 @@
-use serialize::json;
+use serde_json::{Value, to_value};
+use serde::{Serialize, Serializer};
 use std::collections;
+
+pub type JsonArray = Vec<Value>;
 
 use object_builder;
 
 pub struct ArrayBuilder {
-    pub array: json::Array,
+    pub array: JsonArray,
     pub null: bool,
     pub skip: bool,
     pub root: Option<String>
@@ -23,9 +26,9 @@ impl ArrayBuilder {
     }
 
     /// Initialize builder with initial value.
-    pub fn from_json(array: json::Json) -> Option<ArrayBuilder> {
+    pub fn from_json(array: Value) -> Option<ArrayBuilder> {
         match array {
-            json::Json::Array(array) => Some(ArrayBuilder {
+            Value::Array(array) => Some(ArrayBuilder {
                 array: array,
                 null: false,
                 skip: false,
@@ -44,7 +47,7 @@ impl ArrayBuilder {
     }
 
     /// Push JSON value to array.
-    pub fn push_json(&mut self, value: json::Json) {
+    pub fn push_json(&mut self, value: Value) {
         self.array.push(value);
     }
 
@@ -69,7 +72,7 @@ impl ArrayBuilder {
         self.skip = true;
     }
 
-    // Set custom root for result json::Json object
+    // Set custom root for result Value object
     pub fn root(&mut self, root: &str) {
         self.root = Some(root.to_string());
     }
@@ -79,13 +82,13 @@ impl ArrayBuilder {
     }
 
     /// Move out internal JSON value.
-    pub fn unwrap(self) -> json::Json {
+    pub fn unwrap(self) -> Value {
         if self.root.is_some() {
             let mut obj = collections::BTreeMap::new();
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
-            json::Json::Object(obj)
+            Value::Object(obj)
         } else {
             self.unwrap_internal()
         }
@@ -93,19 +96,19 @@ impl ArrayBuilder {
 
     /// Move out internal JSON value.
     #[inline]
-    fn unwrap_internal(self) -> json::Json {
+    fn unwrap_internal(self) -> Value {
         if self.null {
-            json::Json::Null
+            Value::Null
         } else {
-            json::Json::Array(self.array)
+            Value::Array(self.array)
         }
     }
 }
 
 impl ArrayBuilder {
     /// Push to array something that can be converted to JSON.
-    pub fn push<T: json::ToJson>(&mut self, value: T) {
-        self.push_json(value.to_json());
+    pub fn push<T: Serialize>(&mut self, value: T) {
+        self.push_json(to_value(&value));
     }
 }
 
@@ -134,16 +137,17 @@ impl ArrayBuilder {
     }
 
     /// Fill this array by JSON values builded from iterator.
-    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A) -> json::Json {
+    pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A) -> Value {
         for a in iter {
             self.push(func(a))
         }
     }
 }
 
-impl json::ToJson for ArrayBuilder {
+impl Serialize for ArrayBuilder {
     /// Copy self to new JSON instance.
-    fn to_json(&self) -> json::Json {
-         if self.null { json::Json::Null } else { self.array.to_json() }
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+        let json_object = if self.null { Value::Null } else { to_value(&self.array) };
+        json_object.serialize(serializer)
     }
 }

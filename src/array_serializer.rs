@@ -1,10 +1,9 @@
-use serialize::json;
+use serde_json::Value;
 
 use object_builder;
 use array_builder;
 
 pub trait ArraySerializer {
-
     fn build(&self, &mut array_builder::ArrayBuilder);
 
     #[inline]
@@ -17,7 +16,7 @@ pub trait ArraySerializer {
         None
     }
 
-    fn serialize(&mut self, include_root: bool) -> json::Json {
+    fn serialize(&mut self, include_root: bool) -> Value {
         let mut bldr = array_builder::ArrayBuilder::new();
 
         let root = self.root();
@@ -38,10 +37,8 @@ pub trait ArraySerializer {
                 };
                 meta_bldr.set_json("meta", meta.unwrap());
                 meta_bldr.unwrap()
-            },
-            None => {
-                bldr.unwrap()
             }
+            None => bldr.unwrap(),
         }
     }
 }

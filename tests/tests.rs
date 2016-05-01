@@ -1,4 +1,3 @@
-extern crate rustc_serialize as serialize;
 extern crate jsonway;
 
 #[derive(Debug)]
@@ -58,6 +57,5 @@ fn simple_array_of_arrays() {
     }).unwrap();
 
     let array = json.as_array().unwrap();
-    
     assert_eq!(array.len(), 2);
 }
