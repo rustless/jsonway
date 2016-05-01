@@ -3,7 +3,6 @@
 #![deny(bad_style)]
 extern crate rustc_serialize as serialize;
 
-pub use mutable_json::MutableJson;
 pub use object_builder::ObjectBuilder;
 pub use array_builder::ArrayBuilder;
 pub use serializer::{Serializer, ObjectSerializer, ObjectScopeSerializer};
@@ -11,13 +10,12 @@ pub use array_serializer::ArraySerializer;
 
 pub mod array_builder;
 pub mod object_builder;
-pub mod mutable_json;
 pub mod serializer;
 pub mod array_serializer;
 
 /// ```rust
 /// let json = jsonway::object(|json| {
-///     json.set("first_name", "Luke".to_string()); 
+///     json.set("first_name", "Luke".to_string());
 ///     json.set("last_name", "Skywalker".to_string());
 ///
 ///     json.object("info", |json| {
@@ -44,7 +42,7 @@ pub mod array_serializer;
 /// Create and return new ListBuilder
 pub fn array<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
     ArrayBuilder::build(builder)
-}    
+}
 
 /// Create and return new ObjectBuilder
 pub fn object<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {

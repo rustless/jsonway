@@ -13,8 +13,8 @@ pub struct ObjectBuilder {
 /// ObjectBuilder is used to produce JSON objects
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
-        ObjectBuilder { 
-            object: collections::BTreeMap::new(), 
+        ObjectBuilder {
+            object: collections::BTreeMap::new(),
             null: false,
             skip: false,
             root: None
@@ -24,8 +24,8 @@ impl ObjectBuilder {
     /// Initialize builder with initial value.
     pub fn from_json(object: json::Json) -> Option<ObjectBuilder> {
         match object {
-            json::Json::Object(object) => Some(ObjectBuilder { 
-                object: object, 
+            json::Json::Object(object) => Some(ObjectBuilder {
+                object: object,
                 null: false,
                 skip: false,
                 root: None
@@ -37,9 +37,9 @@ impl ObjectBuilder {
     /// Create new builder, pass it to closure as mutable ref and return.
     pub fn build<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {
         let mut bldr = ObjectBuilder::new();
-        builder(&mut bldr);  
-        
-        bldr 
+        builder(&mut bldr);
+
+        bldr
     }
 
     /// It you call `null`, this object will be converted to null.
@@ -79,7 +79,7 @@ impl ObjectBuilder {
         if self.null {
             json::Json::Null
         } else {
-            json::Json::Object(self.object)    
+            json::Json::Object(self.object)
         }
     }
 }

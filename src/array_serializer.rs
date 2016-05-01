@@ -6,7 +6,7 @@ use array_builder;
 pub trait ArraySerializer {
 
     fn build(&self, &mut array_builder::ArrayBuilder);
-    
+
     #[inline]
     fn root(&self) -> Option<&str> {
         None
@@ -37,10 +37,10 @@ pub trait ArraySerializer {
                     meta_bldr
                 };
                 meta_bldr.set_json("meta", meta.unwrap());
-                meta_bldr.unwrap()    
+                meta_bldr.unwrap()
             },
             None => {
-                bldr.unwrap()    
+                bldr.unwrap()
             }
         }
     }

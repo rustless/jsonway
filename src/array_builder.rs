@@ -14,8 +14,8 @@ pub struct ArrayBuilder {
 impl ArrayBuilder {
 
     pub fn new() -> ArrayBuilder {
-        ArrayBuilder { 
-            array: vec![], 
+        ArrayBuilder {
+            array: vec![],
             null: false,
             skip: false,
             root: None
@@ -25,8 +25,8 @@ impl ArrayBuilder {
     /// Initialize builder with initial value.
     pub fn from_json(array: json::Json) -> Option<ArrayBuilder> {
         match array {
-            json::Json::Array(array) => Some(ArrayBuilder { 
-                array: array, 
+            json::Json::Array(array) => Some(ArrayBuilder {
+                array: array,
                 null: false,
                 skip: false,
                 root: None
@@ -38,9 +38,9 @@ impl ArrayBuilder {
     /// Create new ArrayBuilder, pass it to closure as mutable ref and return.
     pub fn build<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
         let mut bldr = ArrayBuilder::new();
-        builder(&mut bldr);  
-        
-        bldr 
+        builder(&mut bldr);
+
+        bldr
     }
 
     /// Push JSON value to array.
@@ -118,7 +118,7 @@ impl ArrayBuilder {
             func(a, &mut bldr);
             if !bldr.skip {
                 self.push(bldr.unwrap())
-            }    
+            }
         }
     }
 
@@ -129,14 +129,14 @@ impl ArrayBuilder {
             func(a, &mut bldr);
             if !bldr.skip {
                 self.push(bldr.unwrap())
-            }    
+            }
         }
     }
 
     /// Fill this array by JSON values builded from iterator.
     pub fn map<A, T: Iterator<Item=A>, F>(&mut self, iter: T, func: F) where F: Fn(A) -> json::Json {
         for a in iter {
-            self.push(func(a))      
+            self.push(func(a))
         }
     }
 }
