@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/rustless/jsonway.svg?branch=master)](https://travis-ci.org/rustless/jsonway)
 
-JsonWay gives you a simple DSL for declaring JSON structures. This is particularly helpful when the generation process is fraught with conditionals and loops. It is inspired by [jbuilder](https://github.com/rails/jbuilder) and has similar functional.
+JsonWay gives you a simple DSL for declaring JSON structures.
+This is particularly helpful when the generation process is fraught with conditionals and loops.
+It is inspired by [jbuilder](https://github.com/rails/jbuilder) and has similar functional.
 
 ```toml
 # Cargo.toml
@@ -16,7 +18,7 @@ git = "https://github.com/rustless/jsonway"
 
 ``` rust
 JsonWay::object(|json| {
-    json.set("first_name", "Luke".to_string()); 
+    json.set("first_name", "Luke".to_string());
     json.set("last_name", "Skywalker".to_string());
 
     json.object("info", |json| {
@@ -124,7 +126,7 @@ let light_jedi_tuple_list = JsonWay::list(|json| {
 You can explicitly make `JsonWay` object return `null` if you want:
 
 ~~~rust
-// .. 
+// ..
 match jedi.side {
     Light => {
         json.push(jedi.name.to_string());
@@ -216,9 +218,9 @@ impl ObjectScopeSerializer<Jedi, User> for JediSerializer {
     }
 }
 
-let jedi = Jedi { 
-    name: "Palpatine".to_string(), 
-    secret: "Dark side".to_string() 
+let jedi = Jedi {
+    name: "Palpatine".to_string(),
+    secret: "Dark side".to_string()
 };
 let current_user = User { id: 1, is_admin: true };
 let json = JediSerializer.serialize(&jedi, &current_user);

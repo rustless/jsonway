@@ -1,9 +1,10 @@
 #![crate_type = "rlib"]
 #![deny(warnings)]
 #![deny(bad_style)]
-extern crate rustc_serialize as serialize;
 
-pub use mutable_json::MutableJson;
+extern crate serde;
+extern crate serde_json;
+
 pub use object_builder::ObjectBuilder;
 pub use array_builder::ArrayBuilder;
 pub use serializer::{Serializer, ObjectSerializer, ObjectScopeSerializer};
@@ -11,26 +12,25 @@ pub use array_serializer::ArraySerializer;
 
 pub mod array_builder;
 pub mod object_builder;
-pub mod mutable_json;
 pub mod serializer;
 pub mod array_serializer;
 
 /// ```rust
 /// let json = jsonway::object(|json| {
-///     json.set("first_name", "Luke".to_string()); 
-///     json.set("last_name", "Skywalker".to_string());
+///     json.set("first_name", "Luke");
+///     json.set("last_name", "Skywalker");
 ///
 ///     json.object("info", |json| {
-///         json.set("homeworld", "Tatooine".to_string());
-///         json.set("born", "19 BBY".to_string());
-///         json.set("died", "Between 45 ABY and 137 ABY".to_string());
+///         json.set("homeworld", "Tatooine");
+///         json.set("born", "19 BBY");
+///         json.set("died", "Between 45 ABY and 137 ABY");
 ///     });
 ///
 ///     json.array("masters", |json| {
-///         json.push("Obi-Wan Kenobi".to_string());
-///         json.push("Yoda".to_string());
-///         json.push("Joruus C'baoth (Briefly)".to_string());
-///         json.push("Darth Sidious (Briefly)".to_string());
+///         json.push("Obi-Wan Kenobi");
+///         json.push("Yoda");
+///         json.push("Joruus C'baoth (Briefly)");
+///         json.push("Darth Sidious (Briefly)");
 ///     });
 /// }).unwrap();
 ///
@@ -44,7 +44,7 @@ pub mod array_serializer;
 /// Create and return new ListBuilder
 pub fn array<F>(builder: F) -> ArrayBuilder where F: FnOnce(&mut ArrayBuilder) {
     ArrayBuilder::build(builder)
-}    
+}
 
 /// Create and return new ObjectBuilder
 pub fn object<F>(builder: F) -> ObjectBuilder where F: FnOnce(&mut ObjectBuilder) {

@@ -1,11 +1,10 @@
-use serialize::json;
-
+use serde_json::{Value};
 use object_builder;
 
 /// Provides functionality to create custom JSON presenters for your structs.
-/// 
-/// ## Example 
-/// 
+///
+/// ## Example
+///
 /// ```
 /// use jsonway::{self, Serializer};
 ///
@@ -20,7 +19,7 @@ use object_builder;
 /// impl<'a> jsonway::Serializer for JediSerializer<'a> {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
 ///     fn build(&self, json: &mut jsonway::ObjectBuilder) {
-///         json.set("name", self.jedi.name.to_string());
+///         json.set("name", &self.jedi.name);
 ///     }
 /// }
 ///
@@ -31,20 +30,20 @@ use object_builder;
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(), 
+///     ]).unwrap().as_string().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
 pub trait Serializer {
 
     fn build(&self, &mut object_builder::ObjectBuilder);
-    
+
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self, include_root: bool) -> json::Json {
+    fn serialize(&mut self, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {
@@ -57,9 +56,9 @@ pub trait Serializer {
 }
 
 /// Provides functionality to create custom JSON presenters for your structs.
-/// 
-/// ## Example 
-/// 
+///
+/// ## Example
+///
 /// ```
 /// use jsonway::{self, ObjectSerializer};
 ///
@@ -72,7 +71,7 @@ pub trait Serializer {
 /// impl jsonway::ObjectSerializer<Jedi> for JediSerializer {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
 ///     fn build(&self, jedi: &Jedi, json: &mut jsonway::ObjectBuilder) {
-///         json.set("name", jedi.name.to_string());
+///         json.set("name", &jedi.name);
 ///     }
 /// }
 ///
@@ -83,20 +82,20 @@ pub trait Serializer {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(), 
+///     ]).unwrap().as_string().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
 pub trait ObjectSerializer<T> {
 
     fn build(&self, &T, &mut object_builder::ObjectBuilder);
-    
+
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, include_root: bool) -> json::Json {
+    fn serialize(&mut self, obj: &T, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {
@@ -108,38 +107,38 @@ pub trait ObjectSerializer<T> {
 }
 
 /// Provides functionality to create custom JSON presenters for your structs.
-/// 
-/// ## Example 
-/// 
+///
+/// ## Example
+///
 /// ```rust
 /// use jsonway::{self, ObjectScopeSerializer};
-/// 
+///
 /// struct User {
 ///     id: u64,
 ///     is_admin: bool
 /// }
-/// 
+///
 /// struct Jedi {
 ///     name: String,
 ///     secret: String
 /// }
-/// 
+///
 /// struct JediSerializer;
-/// 
+///
 /// impl jsonway::ObjectScopeSerializer<Jedi, User> for JediSerializer {
 ///     fn root(&self) -> Option<&str> { Some("jedi") }
 ///     fn build(&self, jedi: &Jedi, current_user: &User, json: &mut jsonway::ObjectBuilder) {
 ///         json.set("name", jedi.name.to_string());
-/// 
+///
 ///         if current_user.is_admin {
 ///             json.set("secret", jedi.secret.to_string());
 ///         }
 ///     }
 /// }
-/// 
-/// let jedi = Jedi { 
-///     name: "Palpatine".to_string(), 
-///     secret: "Dark side".to_string() 
+///
+/// let jedi = Jedi {
+///     name: "Palpatine".to_string(),
+///     secret: "Dark side".to_string()
 /// };
 ///
 /// let current_user = User { id: 1, is_admin: true };
@@ -149,7 +148,7 @@ pub trait ObjectSerializer<T> {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(), 
+///     ]).unwrap().as_string().unwrap(),
 ///     "Palpatine"
 /// );
 ///
@@ -157,7 +156,7 @@ pub trait ObjectSerializer<T> {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "secret",
-///     ]).unwrap().as_string().unwrap(), 
+///     ]).unwrap().as_string().unwrap(),
 ///     "Dark side"
 /// );
 ///
@@ -165,13 +164,13 @@ pub trait ObjectSerializer<T> {
 pub trait ObjectScopeSerializer<T, S> {
 
     fn build(&self, &T, &S, &mut object_builder::ObjectBuilder);
-    
+
     #[inline]
     fn root(&self) -> Option<&str> {
         None
     }
 
-    fn serialize(&mut self, obj: &T, scope: &S, include_root: bool) -> json::Json {
+    fn serialize(&mut self, obj: &T, scope: &S, include_root: bool) -> Value {
         let mut bldr = object_builder::ObjectBuilder::new();
         let root = self.root();
         if include_root && root.is_some() {
