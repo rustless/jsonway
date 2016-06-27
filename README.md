@@ -4,7 +4,7 @@
 
 JsonWay gives you a simple DSL for declaring JSON structures.
 This is particularly helpful when the generation process is fraught with conditionals and loops.
-It is inspired by [jbuilder](https://github.com/rails/jbuilder) and has similar functional.
+It is inspired by [jbuilder](https://github.com/rails/jbuilder) and has similar functionality.
 
 ```toml
 # Cargo.toml
