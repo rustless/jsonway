@@ -4,6 +4,8 @@ name = "jsonway"
 version = "1.0.0"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
 description = "JSON building DSL and configurable serializers for Rust"
+repository = "https://github.com/rustless/jsonway"
+documentation = "http://rustless.org/rustless/doc/jsonway/"
 keywords = ["json", "serializers"]
 license = "MIT"
 
