@@ -30,7 +30,7 @@ use object_builder;
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(),
+///     ]).unwrap().as_str().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
@@ -82,7 +82,7 @@ pub trait Serializer {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(),
+///     ]).unwrap().as_str().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
@@ -148,7 +148,7 @@ pub trait ObjectSerializer<T> {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "name",
-///     ]).unwrap().as_string().unwrap(),
+///     ]).unwrap().as_str().unwrap(),
 ///     "Palpatine"
 /// );
 ///
@@ -156,7 +156,7 @@ pub trait ObjectSerializer<T> {
 ///     json.find_path(&[
 ///         "jedi",
 ///         "secret",
-///     ]).unwrap().as_string().unwrap(),
+///     ]).unwrap().as_str().unwrap(),
 ///     "Dark side"
 /// );
 ///
