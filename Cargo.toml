@@ -8,8 +8,8 @@ keywords = ["json", "serializers"]
 license = "MIT"
 
 [dependencies]
-serde = "0.7"
-serde_json = "0.7"
+serde = "0.8"
+serde_json = "0.8"
 
 [[test]]
 name = "tests"
