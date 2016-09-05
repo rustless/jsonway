@@ -17,7 +17,7 @@ git = "https://github.com/rustless/jsonway"
 ## Simple example
 
 ``` rust
-JsonWay::object(|json| {
+jsonway::object(|json| {
     json.set("first_name", "Luke".to_string());
     json.set("last_name", "Skywalker".to_string());
 
@@ -27,7 +27,7 @@ JsonWay::object(|json| {
         json.set("died", "Between 45 ABY and 137 ABY".to_string());
     });
 
-    json.list("masters", |json| {
+    json.array("masters", |json| {
         json.push("Obi-Wan Kenobi".to_string());
         json.push("Yoda".to_string());
         json.push("Joruus C'baoth (Briefly)".to_string());
@@ -55,8 +55,7 @@ JsonWay::object(|json| {
 ## Build with iterators
 
 ~~~rust
-
-#[deriving(Show)]
+#[derive(Debug)]
 enum Side {
     Light,
     Dark
@@ -68,20 +67,20 @@ struct Jedi {
 }
 
 let jedi = vec![
-    Jedi { name: "Saes Rrogon".to_string(), side: Dark },
-    Jedi { name: "Qui-Gon Jinn".to_string(), side: Light },
-    Jedi { name: "Obi-Wan Kenobi".to_string(), side: Light }
+    Jedi { name: "Saes Rrogon".to_string(), side: Side::Dark },
+    Jedi { name: "Qui-Gon Jinn".to_string(), side: Side::Light },
+    Jedi { name: "Obi-Wan Kenobi".to_string(), side: Side::Light }
 ];
 
-let light_jedi_objects_list = JsonWay::list(|json| {
+let light_jedi_objects_list = jsonway::array(|json| {
     // Use `objects` method to make list of objects
     json.objects(&mut jedi.iter(), |jedi, json| {
         match jedi.side {
-            Light => {
+            Side::Light => {
                 json.set("name".to_string(), jedi.name.to_string());
-                json.set("side".to_string(), jedi.side.to_string());
-            },
-            Dark => json.skip()
+                json.set("side".to_string(), format!("{:?}", jedi.side));
+            }
+            Side::Dark => json.skip(),
         }
     })
 });
@@ -97,15 +96,15 @@ let light_jedi_objects_list = JsonWay::list(|json| {
 //   }
 // ]
 
-let light_jedi_tuple_list = JsonWay::list(|json| {
-    // Use `lists` method to make list of lists
-    json.lists(&mut jedi.iter(), |jedi, json| {
+let light_jedi_tuple_list = jsonway::array(|json| {
+    // Use `arrays` method to make list of lists
+    json.arrays(&mut jedi.iter(), |jedi, json| {
         match jedi.side {
-            Light => {
+            Side::Light => {
                 json.push(jedi.name.to_string());
-                json.push(jedi.side.to_string());
-            },
-            Dark => json.skip()
+                json.push(format!("{:?}", jedi.side));
+            }
+            Side::Dark => json.skip(),
         }
     })
 });
@@ -128,11 +127,11 @@ You can explicitly make `JsonWay` object return `null` if you want:
 ~~~rust
 // ..
 match jedi.side {
-    Light => {
+    Side::Light => {
         json.push(jedi.name.to_string());
-        json.push(jedi.side.to_string());
+        json.push(format!("{:?}", jedi.side));
     },
-    Dark => json.null()
+    Side::Dark => json.null()
 }
 ~~~
 
@@ -142,7 +141,7 @@ match jedi.side {
 
 Provides convention and functionality to create custom JSON presenters for any struct.
 
-```
+```rust
 use jsonway::{ObjectBuilder, Serializer};
 
 struct Jedi {
