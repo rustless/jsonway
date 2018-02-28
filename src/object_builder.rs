@@ -1,8 +1,7 @@
-use std::collections::{BTreeMap};
 use serde_json::{Value, to_value};
 use serde::{Serialize, Serializer};
 
-pub type Object = BTreeMap<String, Value>;
+pub type Object = ::serde_json::Map<String, Value>;
 use array_builder;
 
 pub struct ObjectBuilder {
@@ -16,7 +15,7 @@ pub struct ObjectBuilder {
 impl ObjectBuilder {
     pub fn new() -> ObjectBuilder {
         ObjectBuilder {
-            object: BTreeMap::new(),
+            object: ::serde_json::Map::new(),
             null: false,
             skip: false,
             root: None
@@ -66,7 +65,7 @@ impl ObjectBuilder {
     /// Move out internal JSON value.
     pub fn unwrap(self) -> Value {
         if self.root.is_some() {
-            let mut obj = BTreeMap::new();
+            let mut obj = ::serde_json::Map::new();
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
@@ -90,7 +89,7 @@ impl ObjectBuilder {
     /// Set object's `name` field with something that can be
     /// converted to Value value.
     pub fn set<V: Serialize, N: Into<String>>(&mut self, name: N, value: V) {
-        self.set_json(name, to_value(&value));
+        self.set_json(name, to_value(&value).unwrap());
     }
 
     /// Stub for future use
@@ -118,8 +117,8 @@ impl ObjectBuilder {
 
 impl Serialize for ObjectBuilder {
     /// Copy self to new JSON instance.
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-        let json_object = if self.null { Value::Null } else { to_value(&self.object) };
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        let json_object = if self.null { Value::Null } else { to_value(&self.object).unwrap() };
         json_object.serialize(serializer)
     }
 }
