@@ -1,6 +1,5 @@
 use serde_json::{Value, to_value};
 use serde::{Serialize, Serializer};
-use std::collections;
 
 pub type JsonArray = Vec<Value>;
 
@@ -84,7 +83,7 @@ impl ArrayBuilder {
     /// Move out internal JSON value.
     pub fn unwrap(self) -> Value {
         if self.root.is_some() {
-            let mut obj = collections::BTreeMap::new();
+            let mut obj = ::serde_json::Map::new();
             let root = self.root.as_ref().unwrap().to_string();
             let self_json = self.unwrap_internal();
             obj.insert(root, self_json);
@@ -108,7 +107,7 @@ impl ArrayBuilder {
 impl ArrayBuilder {
     /// Push to array something that can be converted to JSON.
     pub fn push<T: Serialize>(&mut self, value: T) {
-        self.push_json(to_value(&value));
+        self.push_json(to_value(&value).unwrap());
     }
 }
 
@@ -146,8 +145,8 @@ impl ArrayBuilder {
 
 impl Serialize for ArrayBuilder {
     /// Copy self to new JSON instance.
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-        let json_object = if self.null { Value::Null } else { to_value(&self.array) };
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        let json_object = if self.null { Value::Null } else { to_value(&self.array).unwrap() };
         json_object.serialize(serializer)
     }
 }

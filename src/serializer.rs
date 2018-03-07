@@ -27,10 +27,7 @@ use object_builder;
 /// let json = JediSerializer{jedi: &jedi}.serialize(true);
 ///
 /// assert_eq!(
-///     json.find_path(&[
-///         "jedi",
-///         "name",
-///     ]).unwrap().as_str().unwrap(),
+///     json.pointer("/jedi/name").unwrap().as_str().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
@@ -79,10 +76,7 @@ pub trait Serializer {
 /// let json = JediSerializer.serialize(&jedi, true);
 ///
 /// assert_eq!(
-///     json.find_path(&[
-///         "jedi",
-///         "name",
-///     ]).unwrap().as_str().unwrap(),
+///     json.pointer("/jedi/name").unwrap().as_str().unwrap(),
 ///     "Saes Rrogon"
 /// );
 /// ```
@@ -145,18 +139,12 @@ pub trait ObjectSerializer<T> {
 /// let json = JediSerializer.serialize(&jedi, &current_user, true);
 ///
 /// assert_eq!(
-///     json.find_path(&[
-///         "jedi",
-///         "name",
-///     ]).unwrap().as_str().unwrap(),
+///     json.pointer("/jedi/name").unwrap().as_str().unwrap(),
 ///     "Palpatine"
 /// );
 ///
 /// assert_eq!(
-///     json.find_path(&[
-///         "jedi",
-///         "secret",
-///     ]).unwrap().as_str().unwrap(),
+///     json.pointer("/jedi/secret").unwrap().as_str().unwrap(),
 ///     "Dark side"
 /// );
 ///
