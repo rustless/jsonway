@@ -12,7 +12,7 @@ It is inspired by [jbuilder](https://github.com/rails/jbuilder) and has similar 
 git = "https://github.com/rustless/jsonway"
 ```
 
-[API docs](http://rustless.org/jsonway/doc/jsonway/)
+[API docs](https://docs.rs/jsonway/)
 
 ## Simple example
 
