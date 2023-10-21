@@ -4,7 +4,7 @@ use object_builder;
 use array_builder;
 
 pub trait ArraySerializer {
-    fn build(&self, &mut array_builder::ArrayBuilder);
+    fn build(&self, _: &mut array_builder::ArrayBuilder);
 
     #[inline]
     fn root(&self) -> Option<&str> {
